@@ -332,8 +332,7 @@ tr:hover td { background: rgba(255,255,255,.045); }
 }
 .team strong { font-size: 15px; }
 .team span { color: var(--muted); font-size: 12px; }
-.country-with-flag, .country-name { display: inline-flex; align-items: center; gap: 8px; }
-.flag-icon { font-size: 18px; line-height: 1; filter: drop-shadow(0 1px 1px rgba(0,0,0,.35)); }
+.country-name { display: inline-flex; align-items: center; }
 button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--gold); border-color: rgba(238,190,73,.55); }
 .sortable-btn::after { content: '↕'; margin-left: 6px; opacity: .68; font-size: 11px; }
 .score-dash { text-align: center; color: var(--muted); font-weight: 900; }
@@ -554,22 +553,10 @@ const rankByCountry = Object.fromEntries(APP_DATA.rankings.map(r => [r.country, 
 const entrantByCountry = Object.fromEntries(APP_DATA.draw.map(d => [d.country, d]));
 const bottom15 = [...APP_DATA.rankings].sort((a,b) => b.ranking - a.ranking).slice(0, 15).map(r => r.country);
 
-const FLAG_BY_COUNTRY = {
-  "Algeria":"🇩🇿", "Argentina":"🇦🇷", "Australia":"🇦🇺", "Austria":"🇦🇹", "Belgium":"🇧🇪",
-  "Bosnia and Herzegovina":"🇧🇦", "Brazil":"🇧🇷", "Cabo Verde":"🇨🇻", "Canada":"🇨🇦", "Colombia":"🇨🇴",
-  "Congo DR":"🇨🇩", "Croatia":"🇭🇷", "Curaçao":"🇨🇼", "Czechia":"🇨🇿", "Côte d'Ivoire":"🇨🇮",
-  "Ecuador":"🇪🇨", "Egypt":"🇪🇬", "England":"🏴", "France":"🇫🇷", "Germany":"🇩🇪", "Ghana":"🇬🇭",
-  "Haiti":"🇭🇹", "IR Iran":"🇮🇷", "Iraq":"🇮🇶", "Japan":"🇯🇵", "Jordan":"🇯🇴", "Korea Republic":"🇰🇷",
-  "Mexico":"🇲🇽", "Morocco":"🇲🇦", "Netherlands":"🇳🇱", "New Zealand":"🇳🇿", "Norway":"🇳🇴", "Panama":"🇵🇦",
-  "Paraguay":"🇵🇾", "Portugal":"🇵🇹", "Qatar":"🇶🇦", "Saudi Arabia":"🇸🇦", "Scotland":"🏴", "Senegal":"🇸🇳",
-  "South Africa":"🇿🇦", "Spain":"🇪🇸", "Sweden":"🇸🇪", "Switzerland":"🇨🇭", "Tunisia":"🇹🇳", "Türkiye":"🇹🇷",
-  "Uruguay":"🇺🇾", "USA":"🇺🇸", "Uzbekistan":"🇺🇿"
-};
-function flagFor(country) { return FLAG_BY_COUNTRY[country] || ""; }
 function countryName(country) {
-  const flag = flagFor(country);
-  return `<span class="country-name">${flag ? `<span class="flag-icon" aria-hidden="true">${flag}</span>` : ""}<strong>${country}</strong></span>`;
+  return `<span class="country-name"><strong>${country}</strong></span>`;
 }
+
 function setActiveSortButtons(ids, activeId) {
   ids.forEach(id => document.getElementById(id)?.classList.toggle("active-sort", id === activeId));
 }
