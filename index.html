@@ -508,7 +508,7 @@ footer {
     <div class="grid cols-2">
       <div class="card">
         <h3>Group Performance Table</h3>
-        <p class="muted small">Sorted worst-performing to best-performing. Current top row is the live Tight Jeans contender.</p>
+        <p class="muted small">Showing the current worst 15 teams. Top row is the live Tight Jeans contender.</p>
         <div class="table-wrap"><table id="standingsTable"></table></div>
       </div>
       <div class="card">
@@ -731,6 +731,7 @@ function renderAwards() {
   const st = buildStandings();
   const playedAny = st.some(t => t.played);
   const ranked = [...st].sort(sortWorst);
+  const worstRows = ranked.slice(0, 15);
   const bottomRows = st.filter(t => bottom15.includes(t.country)).sort(sortPerformance);
   const tom = bottomRows[0];
   const tight = [...st].sort(sortWorst)[0];
@@ -748,7 +749,7 @@ function renderAwards() {
 
   document.getElementById("standingsTable").innerHTML = `
     <thead><tr><th>Team</th><th>Entrant</th><th>Pld</th><th>Pts</th><th>GD</th><th>GF</th><th>GA</th><th>Rank</th></tr></thead>
-    <tbody>${ranked.map(t => `<tr><td>${countryName(t.country)}</td><td>${entrantByCountry[t.country]?.entrant || "—"}</td><td>${t.played}</td><td>${t.p}</td><td>${t.gd}</td><td>${t.gf}</td><td>${t.ga}</td><td>#${t.rank}</td></tr>`).join("")}</tbody>`;
+    <tbody>${worstRows.map(t => `<tr><td>${countryName(t.country)}</td><td>${entrantByCountry[t.country]?.entrant || "—"}</td><td>${t.played}</td><td>${t.p}</td><td>${t.gd}</td><td>${t.gf}</td><td>${t.ga}</td><td>#${t.rank}</td></tr>`).join("")}</tbody>`;
   document.getElementById("bottomTable").innerHTML = `
     <thead><tr><th>Eligible Team</th><th>Entrant</th><th>Pts</th><th>GD</th><th>GF</th><th>Rank</th></tr></thead>
     <tbody>${bottomRows.map(t => `<tr><td>${countryName(t.country)}</td><td>${entrantByCountry[t.country]?.entrant || "—"}</td><td>${t.p}</td><td>${t.gd}</td><td>${t.gf}</td><td>#${t.rank}</td></tr>`).join("")}</tbody>`;
