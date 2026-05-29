@@ -25,6 +25,11 @@
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
 body {
   margin: 0;
   min-height: 100vh;
@@ -51,16 +56,20 @@ body::before {
   position: relative;
   z-index: 1;
   width: min(1440px, calc(100% - 32px));
+  max-width: 100%;
+  min-width: 0;
   margin: 0 auto;
 }
 .hero {
   padding: 26px 0 18px;
   display: grid;
-  grid-template-columns: 1fr 360px;
+  grid-template-columns: minmax(0, 1fr) 360px;
   gap: 22px;
   align-items: stretch;
+  min-width: 0;
 }
 .hero-card {
+  min-width: 0;
   min-height: 360px;
   border: 1px solid var(--line);
   border-radius: 32px;
@@ -92,8 +101,10 @@ h1 {
 .stat-stack {
   display: grid;
   gap: 14px;
+  min-width: 0;
 }
 .stat {
+  min-width: 0;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--panel);
@@ -122,6 +133,8 @@ h1 {
 }
 nav {
   position: sticky;
+  max-width: 100%;
+  min-width: 0;
   top: 0;
   z-index: 20;
   margin: 8px 0 24px;
@@ -136,6 +149,7 @@ nav {
   overflow-x: auto;
 }
 nav button {
+  flex: 0 0 auto;
   border: 0;
   background: transparent;
   color: var(--muted);
@@ -182,6 +196,7 @@ h2 {
 .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .card {
+  min-width: 0;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--panel);
@@ -219,9 +234,14 @@ h2 {
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
+  min-width: 0;
   margin-bottom: 14px;
 }
+.toolbar > * {
+  max-width: 100%;
+}
 input, select, textarea {
+  max-width: 100%;
   border: 1px solid var(--line);
   background: rgba(255,255,255,.08);
   color: var(--text);
@@ -245,9 +265,14 @@ button.danger { background: rgba(195,59,46,.18); color: #ffd7d1; border: 1px sol
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  min-width: 0;
   margin-bottom: 14px;
 }
 .awardTableTab {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: rgba(255,255,255,.10);
@@ -265,6 +290,7 @@ button.danger { background: rgba(195,59,46,.18); color: #ffd7d1; border: 1px sol
 .awardTablePanel {
   display: none;
   width: 100%;
+  min-width: 0;
 }
 .awardTablePanel.active { display: block; }
 .awardTablePanel .card { width: 100%; }
@@ -284,6 +310,8 @@ button.danger { background: rgba(195,59,46,.18); color: #ffd7d1; border: 1px sol
   font-size: 11px;
 }
 .table-wrap {
+  max-width: 100%;
+  min-width: 0;
   overflow: auto;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -335,20 +363,25 @@ tr:hover td { background: rgba(255,255,255,.045); }
 }
 .day-head {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 10px;
   align-items: center;
+  min-width: 0;
   padding: 16px 18px;
   background: rgba(255,255,255,.075);
   border-bottom: 1px solid var(--line);
 }
 .day-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
   font-size: 20px;
   font-weight: 900;
 }
 .fixture {
   display: grid;
-  grid-template-columns: 92px 112px minmax(160px, 1fr) 78px 28px 78px minmax(160px, 1fr) minmax(180px, 1fr);
+  grid-template-columns: 92px 112px minmax(0, 1fr) 78px 28px 78px minmax(0, 1fr) minmax(0, 1fr);
+  min-width: 0;
   gap: 10px;
   align-items: center;
   padding: 12px 18px;
@@ -368,12 +401,13 @@ tr:hover td { background: rgba(255,255,255,.045); }
 }
 .team {
   display: flex;
+  min-width: 0;
   flex-direction: column;
   gap: 3px;
 }
-.team strong { font-size: 15px; }
+.team strong { font-size: 15px; overflow-wrap: anywhere; }
 .team span { color: var(--muted); font-size: 12px; }
-.country-name { display: inline-flex; align-items: center; }
+.country-name { display: inline-flex; align-items: center; max-width: 100%; min-width: 0; overflow-wrap: anywhere; }
 button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--gold); border-color: rgba(238,190,73,.55); }
 .sortable-btn::after { content: '↕'; margin-left: 6px; opacity: .68; font-size: 11px; }
 .score-dash { text-align: center; color: var(--muted); font-weight: 900; }
@@ -381,9 +415,11 @@ button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--go
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
+  min-width: 0;
   margin-bottom: 16px;
 }
 .award-card {
+  min-width: 0;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: linear-gradient(145deg, rgba(242,194,62,.14), rgba(255,255,255,.05));
@@ -420,22 +456,35 @@ button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--go
 .small { font-size: 12px; }
 .hidden-file { display: none; }
 @media (max-width: 1050px) {
-  .hero { grid-template-columns: 1fr; }
+  .hero { grid-template-columns: minmax(0, 1fr); }
   .stat-stack { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .grid.cols-2, .grid.cols-3, .award-panel { grid-template-columns: 1fr; }
   .fixture {
-    grid-template-columns: 68px 90px 1fr 74px 20px 74px 1fr;
+    grid-template-columns: 68px 90px minmax(0, 1fr) 74px 20px 74px minmax(0, 1fr);
   }
   .fixture .venue { grid-column: 1 / -1; }
 }
 @media (max-width: 760px) {
-  .app { width: min(100% - 18px, 1440px); }
+  .app { width: min(100% - 16px, 1440px); }
+  .hero { gap: 14px; }
   .hero-card { min-height: 420px; padding: 24px; }
-  .stat-stack { grid-template-columns: 1fr; }
+  .stat-stack { grid-template-columns: minmax(0, 1fr); }
+  nav { border-radius: 18px; }
+  .toolbar { align-items: stretch; }
+  .toolbar input, .toolbar select, .toolbar button { flex: 1 1 100%; }
   .section-head { display: block; }
-  .fixture { grid-template-columns: 1fr; gap: 8px; }
+  .fixture { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 12px; }
   .score-box { width: 100%; }
   .score-dash { display: none; }
+  table { min-width: 640px; }
+}
+@media (max-width: 480px) {
+  .hero-card { min-height: 360px; padding: 20px; }
+  h1 { font-size: clamp(54px, 17vw, 72px); }
+  .card, .stat, .award-card { padding: 16px; }
+  .day-head { padding: 14px; }
+  th, td { padding: 10px 12px; }
+  table { min-width: 560px; }
 }
 </style>
 </head>
