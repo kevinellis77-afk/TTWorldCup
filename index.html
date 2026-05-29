@@ -828,7 +828,10 @@ function renderAwards() {
   document.getElementById("tomSub").textContent = playedAny && tom ? `${entrantByCountry[tom.country]?.entrant || "—"} · ${tom.p} pts · GD ${tom.gd} · Rank #${tom.rank}` : "No group results yet.";
   document.getElementById("tightWinner").textContent = playedAny && tight ? tight.country : "—";
   document.getElementById("tightSub").textContent = playedAny && tight ? `${entrantByCountry[tight.country]?.entrant || "—"} · ${tight.p} pts · GD ${tight.gd} · GF ${tight.gf} · GA ${tight.ga}` : "No group results yet.";
-  document.getElementById("beigeWinner").textContent = beige ? beige.team : "—";
+  const beigeEntrant = beige ? entrantByCountry[beige.team]?.entrant : null;
+  document.getElementById("beigeWinner").textContent = beige
+    ? `${beige.team}${beigeEntrant ? ` · ${beigeEntrant}` : ""}`
+    : "—";
   document.getElementById("beigeSub").textContent = beige ? `${beige.type} vs ${beige.opponent} · ranking gap ${beige.gap} · ${beige.score} · ${fmtDate(beige.f.date)}` : "No results yet.";
 
   document.getElementById("statUpset").textContent = beige ? beige.team : "—";
