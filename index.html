@@ -328,6 +328,9 @@ th, td {
   text-align: left;
   vertical-align: middle;
 }
+td {
+  overflow-wrap: anywhere;
+}
 th {
   position: sticky;
   top: 0;
@@ -556,13 +559,33 @@ button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--go
     align-self: center;
   }
   .fixture .venue { grid-area: venue; }
-  table { min-width: 640px; }
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  table {
+    min-width: 0;
+    width: 100%;
+  }
+  th,
+  td {
+    padding: 9px 8px;
+    font-size: 12px;
+    white-space: normal;
+  }
+  #awards table th,
+  #awards table td {
+    padding: 8px 6px;
+    font-size: 11px;
+  }
+  #entrantsTable th:nth-child(4),
+  #entrantsTable td:nth-child(4) {
+    display: none;
+  }
 }
 @media (max-width: 480px) {
   .card, .stat, .award-card { padding: 16px; }
   .day-head { padding: 14px; }
-  th, td { padding: 10px 12px; }
-  table { min-width: 560px; }
 }
 </style>
 </head>
