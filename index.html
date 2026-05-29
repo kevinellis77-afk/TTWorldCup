@@ -644,7 +644,7 @@ function renderFixtures() {
           <div class="score-dash">–</div>
           <input type="number" min="0" inputmode="numeric" data-id="${f.id}" data-side="away" value="${s.away ?? ""}" aria-label="${f.away} score">
           ${countryCell(f.away)}
-          <div class="venue"><div class="muted small">${f.venue}</div><div class="small">${upset}</div></div>
+          <div class="venue"><div class="muted small">${f.venue}</div><div class="small" data-upset-id="${f.id}">${upset}</div></div>
         </div>`;
       }).join("")}
     </div>`).join("");
@@ -654,6 +654,10 @@ function renderFixtures() {
       const side = e.target.dataset.side;
       scores[id] ||= {};
       scores[id][side] = e.target.value;
+      const fixture = APP_DATA.fixtures.find(f => String(f.id) === String(id));
+      const upsetLabel = [...document.querySelectorAll("#fixturesList [data-upset-id]")]
+        .find(el => el.dataset.upsetId === id);
+      if (fixture && upsetLabel) upsetLabel.innerHTML = describeUpset(fixture);
       persistScores();
     });
   });
