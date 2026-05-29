@@ -247,6 +247,33 @@ button.primary, button.secondary, label.secondary {
 button.primary { background: var(--gold); color: #171305; }
 button.secondary, label.secondary { background: rgba(255,255,255,.10); color: var(--text); border: 1px solid var(--line); }
 button.danger { background: rgba(195,59,46,.18); color: #ffd7d1; border: 1px solid rgba(195,59,46,.4); }
+.awardTableTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.awardTableTab {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255,255,255,.10);
+  color: var(--text);
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 900;
+}
+.awardTableTab.active,
+.awardTableTab:hover {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #1b1605;
+}
+.awardTablePanel {
+  display: none;
+  width: 100%;
+}
+.awardTablePanel.active { display: block; }
+.awardTablePanel .card { width: 100%; }
 .table-wrap {
   overflow: auto;
   border: 1px solid var(--line);
@@ -505,16 +532,24 @@ footer {
       <div class="award-card"><div class="award-title">Tight Jeans Award <span class="muted">(Ultimate Loser)</span></div><div class="award-winner" id="tightWinner">—</div><div class="award-sub" id="tightSub">No group results yet.</div></div>
       <div class="award-card"><div class="award-title">Beige Monday Award <span class="muted">(Biggest Shock)</span></div><div class="award-winner" id="beigeWinner">—</div><div class="award-sub" id="beigeSub">No results yet.</div></div>
     </div>
-    <div class="grid cols-2">
-      <div class="card">
-        <h3>Group Performance Table</h3>
-        <p class="muted small">Showing the current worst 15 teams. Top row is the live Tight Jeans contender.</p>
-        <div class="table-wrap"><table id="standingsTable"></table></div>
+    <div class="awardTableTabs" id="awardTableTabs" role="tablist" aria-label="Live prize board tables">
+      <button class="awardTableTab active" type="button" role="tab" aria-selected="true" aria-controls="award-performance-panel" data-award-panel="award-performance-panel">Worst 15 Performance</button>
+      <button class="awardTableTab" type="button" role="tab" aria-selected="false" aria-controls="award-bottom15-panel" data-award-panel="award-bottom15-panel">Tom Page Watchlist</button>
+    </div>
+    <div class="awardTablePanels">
+      <div class="awardTablePanel active" id="award-performance-panel" role="tabpanel">
+        <div class="card">
+          <h3>Group Performance Table</h3>
+          <p class="muted small">Showing the current worst 15 teams. Top row is the live Tight Jeans contender.</p>
+          <div class="table-wrap"><table id="standingsTable"></table></div>
+        </div>
       </div>
-      <div class="card">
-        <h3>Bottom 15 Watchlist</h3>
-        <p class="muted small">Eligible teams for the Tom Page Award.</p>
-        <div class="table-wrap"><table id="bottomTable"></table></div>
+      <div class="awardTablePanel" id="award-bottom15-panel" role="tabpanel">
+        <div class="card">
+          <h3>Bottom 15 Watchlist</h3>
+          <p class="muted small">Eligible teams for the Tom Page Award.</p>
+          <div class="table-wrap"><table id="bottomTable"></table></div>
+        </div>
       </div>
     </div>
   </section>
@@ -769,7 +804,22 @@ function initFilters() {
   document.getElementById("roundFilter").innerHTML += rounds.map(r => `<option>${r}</option>`).join("");
 }
 
+function wireAwardTableTabs() {
+  document.querySelectorAll(".awardTableTab").forEach(tab => tab.addEventListener("click", () => {
+    const selectedPanel = tab.dataset.awardPanel;
+    document.querySelectorAll(".awardTableTab").forEach(btn => {
+      const isActive = btn === tab;
+      btn.classList.toggle("active", isActive);
+      btn.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+    document.querySelectorAll(".awardTablePanel").forEach(panel => {
+      panel.classList.toggle("active", panel.id === selectedPanel);
+    });
+  }));
+}
+
 function wire() {
+  wireAwardTableTabs();
   document.querySelectorAll("nav button").forEach(btn => btn.addEventListener("click", () => {
     document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
     document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
