@@ -659,7 +659,7 @@ function renderFixtures() {
         const s = scores[f.id] || {};
         const upset = describeUpset(f);
         return `<div class="fixture">
-          <div><strong>${f.time}</strong><div class="muted small">UK</div></div>
+          <div><strong>${f.time}</strong><div class="muted small">Fixture #${f.id} · UK</div></div>
           <div><span class="pill">${f.round}</span></div>
           ${countryCell(f.home)}
           <div class="score-box">${s.home ?? ""}</div>
