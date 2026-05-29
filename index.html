@@ -466,8 +466,22 @@ button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--go
 }
 @media (max-width: 760px) {
   .app { width: min(100% - 16px, 1440px); }
-  .hero { gap: 14px; }
-  .hero-card { min-height: 420px; padding: 24px; }
+  .hero {
+    padding: 14px 0 12px;
+    gap: 12px;
+  }
+  .hero-card {
+    min-height: 220px;
+    padding: 20px;
+    border-radius: 22px;
+  }
+  .hero-card h1 {
+    font-size: clamp(42px, 15vw, 72px);
+    line-height: 0.92;
+  }
+  .kicker {
+    font-size: 12px;
+  }
   .stat-stack { grid-template-columns: minmax(0, 1fr); }
   nav {
     display: flex;
@@ -497,8 +511,6 @@ button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--go
   table { min-width: 640px; }
 }
 @media (max-width: 480px) {
-  .hero-card { min-height: 360px; padding: 20px; }
-  h1 { font-size: clamp(54px, 17vw, 72px); }
   .card, .stat, .award-card { padding: 16px; }
   .day-head { padding: 14px; }
   th, td { padding: 10px 12px; }
