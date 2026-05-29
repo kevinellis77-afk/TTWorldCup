@@ -469,7 +469,25 @@ button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--go
   .hero { gap: 14px; }
   .hero-card { min-height: 420px; padding: 24px; }
   .stat-stack { grid-template-columns: minmax(0, 1fr); }
-  nav { border-radius: 18px; }
+  nav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px;
+    border-radius: 18px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  nav::-webkit-scrollbar {
+    display: none;
+  }
+  nav button {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 10px 14px;
+    white-space: nowrap;
+    font-size: 13px;
+  }
   .toolbar { align-items: stretch; }
   .toolbar input, .toolbar select, .toolbar button { flex: 1 1 100%; }
   .section-head { display: block; }
