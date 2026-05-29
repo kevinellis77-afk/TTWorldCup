@@ -422,7 +422,6 @@ footer {
   <nav id="nav">
     <button data-tab="rules" class="active">Rules & Prizes</button>
     <button data-tab="entrants">Entrants</button>
-    <button data-tab="rankings">Country Rankings</button>
     <button data-tab="fixtures">Fixtures & Results</button>
     <button data-tab="awards">Live Prize Board</button>
   </nav>
@@ -473,22 +472,6 @@ footer {
       <button class="secondary sortable-btn" id="sortEntrantsName">Sort by name</button>
     </div>
     <div class="table-wrap"><table id="entrantsTable"></table></div>
-  </section>
-
-  <section id="rankings">
-    <div class="section-head">
-      <div>
-        <h2>Country Rankings</h2>
-        <div class="section-copy">FIFA ranking table. Sort worst-to-best or best-to-worst depending on how you want to read the draw.</div>
-      </div>
-    </div>
-    <div class="toolbar">
-      <input id="rankSearch" placeholder="Search country or confederation..." />
-      <select id="confFilter"><option value="">All confederations</option></select>
-      <button class="secondary sortable-btn active-sort" id="sortRankWorst">Worst to best</button>
-      <button class="secondary sortable-btn" id="sortRankBest">Best to worst</button>
-    </div>
-    <div class="table-wrap"><table id="rankingsTable"></table></div>
   </section>
 
   <section id="fixtures">
@@ -618,14 +601,19 @@ function renderEntrants() {
 }
 
 function renderRankings() {
-  const q = normalise(document.getElementById("rankSearch").value);
-  const conf = document.getElementById("confFilter").value;
+  const table = document.getElementById("rankingsTable");
+  const search = document.getElementById("rankSearch");
+  const confFilter = document.getElementById("confFilter");
+  if (!table || !search || !confFilter) return;
+
+  const q = normalise(search.value);
+  const conf = confFilter.value;
   let rows = [...APP_DATA.rankings].sort((a,b) => rankingSort === "best" ? a.ranking - b.ranking : b.ranking - a.ranking).filter(r => {
     const hay = normalise(`${r.country} ${r.confederation}`);
     return (!q || hay.includes(q)) && (!conf || r.confederation === conf);
   });
   setActiveSortButtons(["sortRankWorst", "sortRankBest"], rankingSort === "best" ? "sortRankBest" : "sortRankWorst");
-  document.getElementById("rankingsTable").innerHTML = `
+  table.innerHTML = `
     <thead><tr><th>FIFA Rank</th><th>Country</th><th>Confederation</th><th>Entrant</th></tr></thead>
     <tbody>${rows.map(r => `<tr>
       <td><span class="rank-pill ${rankClass(r.ranking)}">#${r.ranking}</span></td>
@@ -767,8 +755,11 @@ function calculateAll() {
 }
 
 function initFilters() {
-  const confs = [...new Set(APP_DATA.rankings.map(r => r.confederation))].sort();
-  document.getElementById("confFilter").innerHTML += confs.map(c => `<option>${c}</option>`).join("");
+  const confFilter = document.getElementById("confFilter");
+  if (confFilter) {
+    const confs = [...new Set(APP_DATA.rankings.map(r => r.confederation))].sort();
+    confFilter.innerHTML += confs.map(c => `<option>${c}</option>`).join("");
+  }
   const rounds = [...new Set(APP_DATA.fixtures.map(f => f.round))];
   document.getElementById("roundFilter").innerHTML += rounds.map(r => `<option>${r}</option>`).join("");
 }
@@ -785,9 +776,6 @@ function wire() {
   document.getElementById("sortEntrantsRank").addEventListener("click", () => { entrantSort = "rank"; renderEntrants(); });
   document.getElementById("sortEntrantsCountry").addEventListener("click", () => { entrantSort = "country"; renderEntrants(); });
   document.getElementById("sortEntrantsName").addEventListener("click", () => { entrantSort = "name"; renderEntrants(); });
-  ["rankSearch","confFilter"].forEach(id => document.getElementById(id).addEventListener("input", renderRankings));
-  document.getElementById("sortRankWorst").addEventListener("click", () => { rankingSort = "worst"; renderRankings(); });
-  document.getElementById("sortRankBest").addEventListener("click", () => { rankingSort = "best"; renderRankings(); });
   ["fixtureSearch","roundFilter"].forEach(id => document.getElementById(id).addEventListener("input", renderFixtures));
   document.getElementById("saveBtn").addEventListener("click", persistScores);
   document.getElementById("resetBtn").addEventListener("click", () => {
@@ -816,7 +804,6 @@ document.getElementById("statFixtures").textContent = APP_DATA.fixtures.length;
 initFilters();
 wire();
 renderEntrants();
-renderRankings();
 renderFixtures();
 calculateAll();
 </script>
