@@ -502,8 +502,18 @@ button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--go
     white-space: nowrap;
     font-size: 13px;
   }
-  .toolbar { align-items: stretch; }
-  .toolbar input, .toolbar select, .toolbar button { flex: 1 1 100%; }
+  .toolbar {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .toolbar input,
+  .toolbar select,
+  .toolbar button,
+  .toolbar label.secondary {
+    width: 100%;
+    min-height: 44px;
+  }
   .section-head { display: block; }
   .fixture {
     grid-template-columns: 1fr auto auto auto 1fr;
