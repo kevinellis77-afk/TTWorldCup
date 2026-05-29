@@ -368,6 +368,15 @@ button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--go
   line-height: 1.45;
   margin-top: 8px;
 }
+.save-status {
+  min-height: 20px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+.save-status.ok { color: #9effc2; }
+.save-status.error { color: #ffd7d1; }
+.save-status.pending { color: var(--gold); }
 .notice {
   padding: 14px 16px;
   border: 1px solid rgba(242,194,62,.35);
@@ -410,7 +419,7 @@ footer {
     <div class="hero-card">
       <div class="kicker">Tractors Together · World Cup Sweepstake</div>
       <h1>Some win glory.<br>Others win shame.</h1>
-      <div class="hero-sub">Track entrants, rankings, fixtures, results and the three chaos prizes. Scores save locally in this browser, so this can be used as a lightweight live admin board during the tournament.</div>
+      <div class="hero-sub">Track entrants, rankings, fixtures, results and the three chaos prizes. Scores load from the shared score API, with browser storage kept only as a cache if the API is unavailable.</div>
     </div>
     <div class="stat-stack">
       <div class="stat"><div class="label">Entrants</div><div class="value" id="statEntrants">48</div><div class="sub">One allocated country per member.</div></div>
@@ -489,6 +498,7 @@ footer {
       <button class="secondary" id="exportBtn">Export score JSON</button>
       <label class="secondary" for="importFile">Import score JSON</label><input type="file" id="importFile" class="hidden-file" accept="application/json" />
       <button class="secondary danger" id="resetBtn">Reset scores</button>
+      <div id="saveStatus" class="save-status" role="status" aria-live="polite">Loading shared scores…</div>
     </div>
     <div id="fixturesList"></div>
   </section>
@@ -527,8 +537,13 @@ footer {
 <script>
 const APP_DATA = {"draw": [{"slot": 1, "entrant": "Lance B", "paid": "No", "country": "Haiti", "ranking": 83, "confederation": "CONCACAF", "winnerFlag": ""}, {"slot": 2, "entrant": "Nick Singleton", "paid": "No", "country": "Korea Republic", "ranking": 25, "confederation": "AFC", "winnerFlag": ""}, {"slot": 3, "entrant": "Tom I", "paid": "No", "country": "Uruguay", "ranking": 17, "confederation": "CONMEBOL", "winnerFlag": ""}, {"slot": 4, "entrant": "Craig", "paid": "No", "country": "USA", "ranking": 16, "confederation": "CONCACAF", "winnerFlag": "Winner"}, {"slot": 5, "entrant": "Kevin Wright", "paid": "No", "country": "Norway", "ranking": 31, "confederation": "UEFA", "winnerFlag": ""}, {"slot": 6, "entrant": "Andy Bantock", "paid": "No", "country": "Brazil", "ranking": 6, "confederation": "CONMEBOL", "winnerFlag": ""}, {"slot": 7, "entrant": "Jamie", "paid": "No", "country": "Portugal", "ranking": 5, "confederation": "UEFA", "winnerFlag": ""}, {"slot": 8, "entrant": "Two Team Sean", "paid": "No", "country": "Argentina", "ranking": 3, "confederation": "CONMEBOL", "winnerFlag": ""}, {"slot": 9, "entrant": "Glee", "paid": "No", "country": "Austria", "ranking": 24, "confederation": "UEFA", "winnerFlag": ""}, {"slot": 10, "entrant": "Jonathan Smith", "paid": "No", "country": "Paraguay", "ranking": 40, "confederation": "CONMEBOL", "winnerFlag": ""}, {"slot": 11, "entrant": "Mike", "paid": "No", "country": "Tunisia", "ranking": 44, "confederation": "CAF", "winnerFlag": ""}, {"slot": 12, "entrant": "Dave H", "paid": "No", "country": "Curaçao", "ranking": 82, "confederation": "CONCACAF", "winnerFlag": ""}, {"slot": 13, "entrant": "Dan Connors", "paid": "No", "country": "Scotland", "ranking": 43, "confederation": "UEFA", "winnerFlag": ""}, {"slot": 14, "entrant": "Harrison Smith", "paid": "No", "country": "Belgium", "ranking": 9, "confederation": "UEFA", "winnerFlag": ""}, {"slot": 15, "entrant": "Kev", "paid": "No", "country": "Uzbekistan", "ranking": 50, "confederation": "AFC", "winnerFlag": ""}, {"slot": 16, "entrant": "Jon Watson", "paid": "No", "country": "Panama", "ranking": 33, "confederation": "CONCACAF", "winnerFlag": ""}, {"slot": 17, "entrant": "Shane Davey", "paid": "No", "country": "Ecuador", "ranking": 23, "confederation": "CONMEBOL", "winnerFlag": ""}, {"slot": 18, "entrant": "Krissy Day", "paid": "No", "country": "New Zealand", "ranking": 85, "confederation": "OFC", "winnerFlag": ""}, {"slot": 19, "entrant": "Mullet", "paid": "No", "country": "Cabo Verde", "ranking": 69, "confederation": "CAF", "winnerFlag": ""}, {"slot": 20, "entrant": "Jack Paul Saunders", "paid": "No", "country": "Qatar", "ranking": 55, "confederation": "AFC", "winnerFlag": ""}, {"slot": 21, "entrant": "Tom Page", "paid": "No", "country": "Sweden", "ranking": 38, "confederation": "UEFA", "winnerFlag": ""}, {"slot": 22, "entrant": "Phil", "paid": "No", "country": "Algeria", "ranking": 28, "confederation": "CAF", "winnerFlag": ""}, {"slot": 23, "entrant": "Spreadsheet Chris' Nephew", "paid": "No", "country": "Croatia", "ranking": 11, "confederation": "UEFA", "winnerFlag": ""}, {"slot": 24, "entrant": "Veronica", "paid": "No", "country": "Canada", "ranking": 27, "confederation": "CONCACAF", "winnerFlag": ""}, {"slot": 25, "entrant": "Paul Walsh", "paid": "No", "country": "Jordan", "ranking": 63, "confederation": "AFC", "winnerFlag": ""}, {"slot": 26, "entrant": "Oscar", "paid": "No", "country": "Türkiye", "ranking": 22, "confederation": "UEFA", "winnerFlag": ""}, {"slot": 27, "entrant": "Skip Intro", "paid": "No", "country": "Egypt", "ranking": 29, "confederation": "CAF", "winnerFlag": ""}, {"slot": 28, "entrant": "SYTC", "paid": "No", "country": "South Africa", "ranking": 60, "confederation": "CAF", "winnerFlag": ""}, {"slot": 29, "entrant": "Foyster", "paid": "No", "country": "Saudi Arabia", "ranking": 61, "confederation": "AFC", "winnerFlag": ""}, {"slot": 30, "entrant": "Henry Levell", "paid": "No", "country": "Japan", "ranking": 18, "confederation": "AFC", "winnerFlag": ""}, {"slot": 31, "entrant": "Joe Pickover", "paid": "No", "country": "Switzerland", "ranking": 19, "confederation": "UEFA", "winnerFlag": ""}, {"slot": 32, "entrant": "Brian Emsden", "paid": "No", "country": "IR Iran", "ranking": 21, "confederation": "AFC", "winnerFlag": ""}, {"slot": 33, "entrant": "Paul Wellstead", "paid": "No", "country": "Senegal", "ranking": 14, "confederation": "CAF", "winnerFlag": ""}, {"slot": 34, "entrant": "Ashley Elden", "paid": "No", "country": "Ghana", "ranking": 74, "confederation": "CAF", "winnerFlag": ""}, {"slot": 35, "entrant": "James Reeve", "paid": "No", "country": "Congo DR", "ranking": 46, "confederation": "CAF", "winnerFlag": ""}, {"slot": 36, "entrant": "Mauricio", "paid": "No", "country": "Mexico", "ranking": 15, "confederation": "CONCACAF", "winnerFlag": ""}, {"slot": 37, "entrant": "Carl", "paid": "No", "country": "England", "ranking": 4, "confederation": "UEFA", "winnerFlag": ""}, {"slot": 38, "entrant": "Tim Welch", "paid": "No", "country": "France", "ranking": 1, "confederation": "UEFA", "winnerFlag": ""}, {"slot": 39, "entrant": "Sarah B", "paid": "No", "country": "Colombia", "ranking": 13, "confederation": "CONMEBOL", "winnerFlag": ""}, {"slot": 40, "entrant": "Moany Bollocks", "paid": "No", "country": "Iraq", "ranking": 57, "confederation": "AFC", "winnerFlag": ""}, {"slot": 41, "entrant": "John (@chelmsford Blue)", "paid": "No", "country": "Germany", "ranking": 10, "confederation": "UEFA", "winnerFlag": ""}, {"slot": 42, "entrant": "Joe", "paid": "No", "country": "Australia", "ranking": 27, "confederation": "AFC", "winnerFlag": ""}, {"slot": 43, "entrant": "Ed Seaton", "paid": "No", "country": "Czechia", "ranking": 41, "confederation": "UEFA", "winnerFlag": ""}, {"slot": 44, "entrant": "Dave Bawden", "paid": "No", "country": "Netherlands", "ranking": 7, "confederation": "UEFA", "winnerFlag": ""}, {"slot": 45, "entrant": "Jason Milton (BigHead)", "paid": "No", "country": "Morocco", "ranking": 8, "confederation": "CAF", "winnerFlag": ""}, {"slot": 46, "entrant": "Alistair Rattray", "paid": "No", "country": "Côte d'Ivoire", "ranking": 34, "confederation": "CAF", "winnerFlag": ""}, {"slot": 47, "entrant": "Tight Jeans", "paid": "No", "country": "Bosnia and Herzegovina", "ranking": 65, "confederation": "UEFA", "winnerFlag": ""}, {"slot": 48, "entrant": "MKS (Less Wordy Mike)", "paid": "No", "country": "Spain", "ranking": 2, "confederation": "UEFA", "winnerFlag": ""}], "rankings": [{"country": "New Zealand", "confederation": "OFC", "ranking": 85}, {"country": "Haiti", "confederation": "CONCACAF", "ranking": 83}, {"country": "Curaçao", "confederation": "CONCACAF", "ranking": 82}, {"country": "Ghana", "confederation": "CAF", "ranking": 74}, {"country": "Cabo Verde", "confederation": "CAF", "ranking": 69}, {"country": "Bosnia and Herzegovina", "confederation": "UEFA", "ranking": 65}, {"country": "Jordan", "confederation": "AFC", "ranking": 63}, {"country": "Saudi Arabia", "confederation": "AFC", "ranking": 61}, {"country": "South Africa", "confederation": "CAF", "ranking": 60}, {"country": "Iraq", "confederation": "AFC", "ranking": 57}, {"country": "Qatar", "confederation": "AFC", "ranking": 55}, {"country": "Uzbekistan", "confederation": "AFC", "ranking": 50}, {"country": "Congo DR", "confederation": "CAF", "ranking": 46}, {"country": "Tunisia", "confederation": "CAF", "ranking": 44}, {"country": "Scotland", "confederation": "UEFA", "ranking": 43}, {"country": "Czechia", "confederation": "UEFA", "ranking": 41}, {"country": "Paraguay", "confederation": "CONMEBOL", "ranking": 40}, {"country": "Sweden", "confederation": "UEFA", "ranking": 38}, {"country": "Côte d'Ivoire", "confederation": "CAF", "ranking": 34}, {"country": "Panama", "confederation": "CONCACAF", "ranking": 33}, {"country": "Norway", "confederation": "UEFA", "ranking": 31}, {"country": "Egypt", "confederation": "CAF", "ranking": 29}, {"country": "Algeria", "confederation": "CAF", "ranking": 28}, {"country": "Canada", "confederation": "CONCACAF", "ranking": 27}, {"country": "Australia", "confederation": "AFC", "ranking": 27}, {"country": "Korea Republic", "confederation": "AFC", "ranking": 25}, {"country": "Austria", "confederation": "UEFA", "ranking": 24}, {"country": "Ecuador", "confederation": "CONMEBOL", "ranking": 23}, {"country": "Türkiye", "confederation": "UEFA", "ranking": 22}, {"country": "IR Iran", "confederation": "AFC", "ranking": 21}, {"country": "Switzerland", "confederation": "UEFA", "ranking": 19}, {"country": "Japan", "confederation": "AFC", "ranking": 18}, {"country": "Uruguay", "confederation": "CONMEBOL", "ranking": 17}, {"country": "USA", "confederation": "CONCACAF", "ranking": 16}, {"country": "Mexico", "confederation": "CONCACAF", "ranking": 15}, {"country": "Senegal", "confederation": "CAF", "ranking": 14}, {"country": "Colombia", "confederation": "CONMEBOL", "ranking": 13}, {"country": "Croatia", "confederation": "UEFA", "ranking": 11}, {"country": "Germany", "confederation": "UEFA", "ranking": 10}, {"country": "Belgium", "confederation": "UEFA", "ranking": 9}, {"country": "Morocco", "confederation": "CAF", "ranking": 8}, {"country": "Netherlands", "confederation": "UEFA", "ranking": 7}, {"country": "Brazil", "confederation": "CONMEBOL", "ranking": 6}, {"country": "Portugal", "confederation": "UEFA", "ranking": 5}, {"country": "England", "confederation": "UEFA", "ranking": 4}, {"country": "Argentina", "confederation": "CONMEBOL", "ranking": 3}, {"country": "Spain", "confederation": "UEFA", "ranking": 2}, {"country": "France", "confederation": "UEFA", "ranking": 1}], "fixtures": [{"id": 1, "date": "2026-06-11", "round": "Group A", "home": "Mexico", "away": "South Africa", "time": "20:00", "venue": "Mexico City, Mexico"}, {"id": 2, "date": "2026-06-12", "round": "Group A", "home": "Korea Republic", "away": "Czechia", "time": "03:00", "venue": "Zapopan, Mexico"}, {"id": 3, "date": "2026-06-12", "round": "Group B", "home": "Canada", "away": "Bosnia and Herzegovina", "time": "20:00", "venue": "Toronto, Canada"}, {"id": 4, "date": "2026-06-13", "round": "Group D", "home": "USA", "away": "Paraguay", "time": "02:00", "venue": "Los Angeles, USA"}, {"id": 5, "date": "2026-06-13", "round": "Group B", "home": "Qatar", "away": "Switzerland", "time": "20:00", "venue": "Santa Clara, USA"}, {"id": 6, "date": "2026-06-13", "round": "Group C", "home": "Brazil", "away": "Morocco", "time": "23:00", "venue": "New Jersey, USA"}, {"id": 7, "date": "2026-06-14", "round": "Group C", "home": "Haiti", "away": "Scotland", "time": "02:00", "venue": "Foxborough, USA"}, {"id": 8, "date": "2026-06-14", "round": "Group D", "home": "Australia", "away": "Türkiye", "time": "05:00", "venue": "Vancouver, Canada"}, {"id": 9, "date": "2026-06-14", "round": "Group E", "home": "Germany", "away": "Curaçao", "time": "18:00", "venue": "Houston, USA"}, {"id": 10, "date": "2026-06-14", "round": "Group F", "home": "Netherlands", "away": "Japan", "time": "21:00", "venue": "Arlington, USA"}, {"id": 11, "date": "2026-06-15", "round": "Group E", "home": "Côte d'Ivoire", "away": "Ecuador", "time": "00:00", "venue": "Philadelphia, USA"}, {"id": 12, "date": "2026-06-15", "round": "Group F", "home": "Sweden", "away": "Tunisia", "time": "03:00", "venue": "Guadalupe, Mexico"}, {"id": 13, "date": "2026-06-15", "round": "Group H", "home": "Spain", "away": "Cabo Verde", "time": "17:00", "venue": "Atlanta, USA"}, {"id": 14, "date": "2026-06-15", "round": "Group G", "home": "Belgium", "away": "Egypt", "time": "20:00", "venue": "Seattle, USA"}, {"id": 15, "date": "2026-06-15", "round": "Group H", "home": "Saudi Arabia", "away": "Uruguay", "time": "23:00", "venue": "Miami, USA"}, {"id": 16, "date": "2026-06-16", "round": "Group G", "home": "IR Iran", "away": "New Zealand", "time": "02:00", "venue": "Los Angeles, USA"}, {"id": 17, "date": "2026-06-16", "round": "Group I", "home": "France", "away": "Senegal", "time": "20:00", "venue": "New Jersey, USA"}, {"id": 18, "date": "2026-06-16", "round": "Group I", "home": "Iraq", "away": "Norway", "time": "23:00", "venue": "Foxborough, USA"}, {"id": 19, "date": "2026-06-17", "round": "Group J", "home": "Argentina", "away": "Algeria", "time": "02:00", "venue": "Kansas City, USA"}, {"id": 20, "date": "2026-06-17", "round": "Group J", "home": "Austria", "away": "Jordan", "time": "05:00", "venue": "Santa Clara, USA"}, {"id": 21, "date": "2026-06-17", "round": "Group K", "home": "Portugal", "away": "Congo DR", "time": "18:00", "venue": "Houston, USA"}, {"id": 22, "date": "2026-06-17", "round": "Group L", "home": "England", "away": "Croatia", "time": "21:00", "venue": "Arlington, USA"}, {"id": 23, "date": "2026-06-18", "round": "Group L", "home": "Ghana", "away": "Panama", "time": "00:00", "venue": "Toronto, Canada"}, {"id": 24, "date": "2026-06-18", "round": "Group K", "home": "Uzbekistan", "away": "Colombia", "time": "03:00", "venue": "Mexico City, Mexico"}, {"id": 25, "date": "2026-06-18", "round": "Group A", "home": "Czechia", "away": "South Africa", "time": "17:00", "venue": "Atlanta, USA"}, {"id": 26, "date": "2026-06-18", "round": "Group B", "home": "Switzerland", "away": "Bosnia and Herzegovina", "time": "20:00", "venue": "Los Angeles, USA"}, {"id": 27, "date": "2026-06-18", "round": "Group B", "home": "Canada", "away": "Qatar", "time": "23:00", "venue": "Vancouver, Canada"}, {"id": 28, "date": "2026-06-19", "round": "Group A", "home": "Mexico", "away": "Korea Republic", "time": "02:00", "venue": "Zapopan, Mexico"}, {"id": 29, "date": "2026-06-19", "round": "Group D", "home": "USA", "away": "Australia", "time": "20:00", "venue": "Seattle, USA"}, {"id": 30, "date": "2026-06-19", "round": "Group C", "home": "Scotland", "away": "Morocco", "time": "23:00", "venue": "Foxborough, USA"}, {"id": 31, "date": "2026-06-20", "round": "Group C", "home": "Brazil", "away": "Haiti", "time": "01:30", "venue": "Philadelphia, USA"}, {"id": 32, "date": "2026-06-20", "round": "Group D", "home": "Türkiye", "away": "Paraguay", "time": "04:00", "venue": "Santa Clara, USA"}, {"id": 33, "date": "2026-06-20", "round": "Group F", "home": "Netherlands", "away": "Sweden", "time": "18:00", "venue": "Houston, USA"}, {"id": 34, "date": "2026-06-20", "round": "Group E", "home": "Germany", "away": "Côte d'Ivoire", "time": "21:00", "venue": "Toronto, Canada"}, {"id": 35, "date": "2026-06-21", "round": "Group E", "home": "Ecuador", "away": "Curaçao", "time": "01:00", "venue": "Kansas City, USA"}, {"id": 36, "date": "2026-06-21", "round": "Group F", "home": "Tunisia", "away": "Japan", "time": "05:00", "venue": "Guadalupe, Mexico"}, {"id": 37, "date": "2026-06-21", "round": "Group H", "home": "Spain", "away": "Saudi Arabia", "time": "17:00", "venue": "Atlanta, USA"}, {"id": 38, "date": "2026-06-21", "round": "Group G", "home": "Belgium", "away": "IR Iran", "time": "20:00", "venue": "Los Angeles, USA"}, {"id": 39, "date": "2026-06-21", "round": "Group H", "home": "Uruguay", "away": "Cabo Verde", "time": "23:00", "venue": "Miami, USA"}, {"id": 40, "date": "2026-06-22", "round": "Group G", "home": "New Zealand", "away": "Egypt", "time": "02:00", "venue": "Vancouver, Canada"}, {"id": 41, "date": "2026-06-22", "round": "Group J", "home": "Argentina", "away": "Austria", "time": "18:00", "venue": "Arlington, USA"}, {"id": 42, "date": "2026-06-22", "round": "Group I", "home": "France", "away": "Iraq", "time": "22:00", "venue": "Philadelphia, USA"}, {"id": 43, "date": "2026-06-23", "round": "Group I", "home": "Norway", "away": "Senegal", "time": "01:00", "venue": "Toronto, Canada"}, {"id": 44, "date": "2026-06-23", "round": "Group J", "home": "Jordan", "away": "Algeria", "time": "04:00", "venue": "Santa Clara, USA"}, {"id": 45, "date": "2026-06-23", "round": "Group K", "home": "Portugal", "away": "Uzbekistan", "time": "18:00", "venue": "Houston, USA"}, {"id": 46, "date": "2026-06-23", "round": "Group L", "home": "England", "away": "Ghana", "time": "21:00", "venue": "Foxborough, USA"}, {"id": 47, "date": "2026-06-24", "round": "Group L", "home": "Panama", "away": "Croatia", "time": "00:00", "venue": "Foxborough, USA"}, {"id": 48, "date": "2026-06-24", "round": "Group K", "home": "Colombia", "away": "Congo DR", "time": "03:00", "venue": "Zapopan, Mexico"}, {"id": 49, "date": "2026-06-24", "round": "Group B", "home": "Switzerland", "away": "Canada", "time": "20:00", "venue": "Vancouver, Canada"}, {"id": 50, "date": "2026-06-24", "round": "Group B", "home": "Bosnia and Herzegovina", "away": "Qatar", "time": "20:00", "venue": "Seattle, USA"}, {"id": 51, "date": "2026-06-24", "round": "Group C", "home": "Morocco", "away": "Haiti", "time": "23:00", "venue": "Atlanta, USA"}, {"id": 52, "date": "2026-06-24", "round": "Group C", "home": "Scotland", "away": "Brazil", "time": "23:00", "venue": "Miami, USA"}, {"id": 53, "date": "2026-06-25", "round": "Group A", "home": "South Africa", "away": "Korea Republic", "time": "02:00", "venue": "Guadalupe, Mexico"}, {"id": 54, "date": "2026-06-25", "round": "Group A", "home": "Czechia", "away": "Mexico", "time": "02:00", "venue": "Mexico City, Mexico"}, {"id": 55, "date": "2026-06-25", "round": "Group E", "home": "Curaçao", "away": "Côte d'Ivoire", "time": "21:00", "venue": "Philadelphia, USA"}, {"id": 56, "date": "2026-06-25", "round": "Group E", "home": "Ecuador", "away": "Germany", "time": "21:00", "venue": "New Jersey, USA"}, {"id": 57, "date": "2026-06-26", "round": "Group F", "home": "Tunisia", "away": "Netherlands", "time": "00:00", "venue": "Kansas City, USA"}, {"id": 58, "date": "2026-06-26", "round": "Group F", "home": "Japan", "away": "Sweden", "time": "00:00", "venue": "Arlington, USA"}, {"id": 59, "date": "2026-06-26", "round": "Group D", "home": "Türkiye", "away": "USA", "time": "03:00", "venue": "Los Angeles, USA"}, {"id": 60, "date": "2026-06-26", "round": "Group D", "home": "Paraguay", "away": "Australia", "time": "03:00", "venue": "Santa Clara, USA"}, {"id": 61, "date": "2026-06-26", "round": "Group I", "home": "Norway", "away": "France", "time": "20:00", "venue": "Foxborough, USA"}, {"id": 62, "date": "2026-06-26", "round": "Group I", "home": "Senegal", "away": "Iraq", "time": "20:00", "venue": "Toronto, Canada"}, {"id": 63, "date": "2026-06-27", "round": "Group H", "home": "Cabo Verde", "away": "Saudi Arabia", "time": "01:00", "venue": "Houston, USA"}, {"id": 64, "date": "2026-06-27", "round": "Group H", "home": "Uruguay", "away": "Spain", "time": "01:00", "venue": "Zapopan, Mexico"}, {"id": 65, "date": "2026-06-27", "round": "Group G", "home": "New Zealand", "away": "Belgium", "time": "04:00", "venue": "Vancouver, Canada"}, {"id": 66, "date": "2026-06-27", "round": "Group G", "home": "Egypt", "away": "IR Iran", "time": "04:00", "venue": "Seattle, USA"}, {"id": 67, "date": "2026-06-27", "round": "Group L", "home": "Panama", "away": "England", "time": "22:00", "venue": "New Jersey, USA"}, {"id": 68, "date": "2026-06-27", "round": "Group L", "home": "Croatia", "away": "Ghana", "time": "22:00", "venue": "Philadelphia, USA"}, {"id": 69, "date": "2026-06-28", "round": "Group K", "home": "Colombia", "away": "Portugal", "time": "00:30", "venue": "Miami, USA"}, {"id": 70, "date": "2026-06-28", "round": "Group K", "home": "Congo DR", "away": "Uzbekistan", "time": "00:30", "venue": "Atlanta, USA"}, {"id": 71, "date": "2026-06-28", "round": "Group J", "home": "Algeria", "away": "Austria", "time": "03:00", "venue": "Kansas City, USA"}, {"id": 72, "date": "2026-06-28", "round": "Group J", "home": "Jordan", "away": "Argentina", "time": "03:00", "venue": "Arlington, USA"}, {"id": 73, "date": "2026-06-28", "round": "Round of 32", "home": "Group A runners-up", "away": "Group B runners-up", "time": "20:00", "venue": "Los Angeles, USA"}, {"id": 74, "date": "2026-06-29", "round": "Round of 32", "home": "Group C winners", "away": "Group F runners-up", "time": "18:00", "venue": "Houston, USA"}, {"id": 75, "date": "2026-06-29", "round": "Round of 32", "home": "Group E winners", "away": "A/B/C/D/F third place", "time": "21:30", "venue": "Foxborough, USA"}, {"id": 76, "date": "2026-06-30", "round": "Round of 32", "home": "Group F winners", "away": "Group C runners-up", "time": "02:00", "venue": "Guadalupe, Mexico"}, {"id": 77, "date": "2026-06-30", "round": "Round of 32", "home": "Group E runners-up", "away": "Group I runners-up", "time": "18:00", "venue": "Arlington, USA"}, {"id": 78, "date": "2026-06-30", "round": "Round of 32", "home": "Group I winners", "away": "C/D/F/G/H third place", "time": "22:00", "venue": "New Jersey, USA"}, {"id": 79, "date": "2026-07-01", "round": "Round of 32", "home": "Group A winners", "away": "C/E/F/H/I third place", "time": "02:00", "venue": "Mexico City, Mexico"}, {"id": 80, "date": "2026-07-01", "round": "Round of 32", "home": "Group L winners", "away": "E/H/I/J/K third place", "time": "17:00", "venue": "Atlanta, USA"}, {"id": 81, "date": "2026-07-01", "round": "Round of 32", "home": "Group G winners", "away": "A/E/H/I/J third place", "time": "21:00", "venue": "Seattle, USA"}, {"id": 82, "date": "2026-07-02", "round": "Round of 32", "home": "Group D winners", "away": "B/E/F/I/J third place", "time": "01:00", "venue": "Santa Clara, USA"}, {"id": 83, "date": "2026-07-02", "round": "Round of 32", "home": "Group H winners", "away": "Group J runners-up", "time": "20:00", "venue": "Los Angeles, USA"}, {"id": 84, "date": "2026-07-03", "round": "Round of 32", "home": "Group K runners-up", "away": "Group L runners-up", "time": "00:00", "venue": "Toronto, Canada"}, {"id": 85, "date": "2026-07-03", "round": "Round of 32", "home": "Group B winners", "away": "E/F/G/I/J third place", "time": "04:00", "venue": "Vancouver, Canada"}, {"id": 86, "date": "2026-07-03", "round": "Round of 32", "home": "Group D runners-up", "away": "Group G runners-up", "time": "19:00", "venue": "Arlington, USA"}, {"id": 87, "date": "2026-07-03", "round": "Round of 32", "home": "Group J winners", "away": "Group H runners-up", "time": "23:00", "venue": "Miami, USA"}, {"id": 88, "date": "2026-07-04", "round": "Round of 32", "home": "Group K winners", "away": "D/E/I/J/L third place", "time": "02:30", "venue": "Kansas City, USA"}, {"id": 89, "date": "2026-07-04", "round": "Round of 16", "home": "Match 73 winners", "away": "Match 75 winners", "time": "18:00", "venue": "Houston, USA"}, {"id": 90, "date": "2026-07-04", "round": "Round of 16", "home": "Match 74 winners", "away": "Match 77 winners", "time": "22:00", "venue": "Philadelphia, USA"}, {"id": 91, "date": "2026-07-05", "round": "Round of 16", "home": "Match 76 winners", "away": "Match 78 winners", "time": "21:00", "venue": "New Jersey, USA"}, {"id": 92, "date": "2026-07-06", "round": "Round of 16", "home": "Match 79 winners", "away": "Match 80 winners", "time": "01:00", "venue": "Mexico City, Mexico"}, {"id": 93, "date": "2026-07-06", "round": "Round of 16", "home": "Match 83 winners", "away": "Match 84 winners", "time": "20:00", "venue": "Arlington, USA"}, {"id": 94, "date": "2026-07-07", "round": "Round of 16", "home": "Match 81 winners", "away": "Match 82 winners", "time": "01:00", "venue": "Seattle, USA"}, {"id": 95, "date": "2026-07-07", "round": "Round of 16", "home": "Match 86 winners", "away": "Match 88 winners", "time": "17:00", "venue": "Atlanta, USA"}, {"id": 96, "date": "2026-07-07", "round": "Round of 16", "home": "Match 85 winners", "away": "Match 87 winners", "time": "21:00", "venue": "Vancouver, Canada"}, {"id": 97, "date": "2026-07-09", "round": "Quarter-final", "home": "Match 89 winners", "away": "Match 90 winners", "time": "21:00", "venue": "Foxborough, USA"}, {"id": 98, "date": "2026-07-10", "round": "Quarter-final", "home": "Match 93 winners", "away": "Match 94 winners", "time": "20:00", "venue": "Los Angeles, USA"}, {"id": 99, "date": "2026-07-11", "round": "Quarter-final", "home": "Match 91 winners", "away": "Match 92 winners", "time": "22:00", "venue": "Miami, USA"}, {"id": 100, "date": "2026-07-12", "round": "Quarter-final", "home": "Match 95 winners", "away": "Match 96 winners", "time": "02:00", "venue": "Kansas City, USA"}, {"id": 101, "date": "2026-07-14", "round": "Semi-final", "home": "Match 97 winners", "away": "Match 98 winners", "time": "20:00", "venue": "Arlington, USA"}, {"id": 102, "date": "2026-07-15", "round": "Semi-final", "home": "Match 99 winners", "away": "Match 100 winners", "time": "20:00", "venue": "Atlanta, USA"}, {"id": 103, "date": "2026-07-18", "round": "Third-place play-off", "home": "Match 101 losers", "away": "Match 102 losers", "time": "22:00", "venue": "Miami, USA"}, {"id": 104, "date": "2026-07-19", "round": "Final", "home": "Match 101 winners", "away": "Match 102 winners", "time": "20:00", "venue": "New Jersey, USA"}], "rules": {"Winning Country": "£180 for team that wins World Cup", "Tom Page Award": "£20 for the Best Performing team from the bottom 15 Ranked Countries at start of Tournament", "Tight Jeans Award": "For the World Performing Team (Least Points,Worst Goal Difference, Least Goals Scored, Most Conceded)", "Beige Monday Award": "Best individual result by an Underdog. Which team beat a higher ranking team sorted by Difference between both teams ranking at start of tournament. If no winner, then a draw. If no draw £20 goes to Winning Country prize pot. "}, "sources": {"fixtures": "Sky Sports World Cup 2026 fixture schedule and UK kick-off times", "rankings": "Uploaded sweepstake workbook", "generated": "2026-05-29 13:53 UTC"}};
 const STORE_KEY = "tractors-together-sweepstake-v1";
+const SCORE_API_URL = window.SCORE_API_URL || "/api/scores";
+const SCORE_WRITE_TOKEN_KEY = "tractors-together-score-write-token";
+const SAVE_DEBOUNCE_MS = 900;
 
-let scores = loadScores();
+let scores = {};
+let saveTimer = null;
+let saveInFlight = null;
 let entrantSort = "rank";
 let rankingSort = "worst";
 
@@ -545,13 +560,133 @@ function setActiveSortButtons(ids, activeId) {
 }
 
 
-function loadScores() {
-  try { return JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); }
-  catch { return {}; }
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
-function persistScores() {
-  localStorage.setItem(STORE_KEY, JSON.stringify(scores, null, 2));
+
+function loadCachedScores() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+    return isPlainObject(cached) ? cached : {};
+  } catch {
+    return {};
+  }
+}
+
+function cacheScores(nextScores) {
+  localStorage.setItem(STORE_KEY, JSON.stringify(nextScores, null, 2));
+}
+
+function setSaveStatus(message, state = "") {
+  const el = document.getElementById("saveStatus");
+  if (!el) return;
+  el.textContent = message;
+  el.className = `save-status ${state}`.trim();
+}
+
+function getWriteToken() {
+  let token = sessionStorage.getItem(SCORE_WRITE_TOKEN_KEY);
+  if (!token) {
+    token = prompt("Enter the admin score write token to update the shared scoreboard:");
+    if (token) sessionStorage.setItem(SCORE_WRITE_TOKEN_KEY, token);
+  }
+  return token;
+}
+
+async function fetchScores() {
+  setSaveStatus("Loading shared scores…", "pending");
+  try {
+    const response = await fetch(SCORE_API_URL, { headers: { "Accept": "application/json" }, cache: "no-store" });
+    if (!response.ok) throw new Error(`Score API returned ${response.status}`);
+    const payload = await response.json();
+    const remoteScores = isPlainObject(payload.scores) ? payload.scores : {};
+    cacheScores(remoteScores);
+    setSaveStatus(payload.updatedAt ? `Shared scores loaded · last saved ${new Date(payload.updatedAt).toLocaleString("en-GB")}` : "Shared scores loaded", "ok");
+    return remoteScores;
+  } catch (error) {
+    console.error("Could not fetch shared scores", error);
+    const cachedScores = loadCachedScores();
+    setSaveStatus("Shared scores unavailable; showing cached browser copy until the API recovers.", "error");
+    return cachedScores;
+  }
+}
+
+async function saveScores(nextScores) {
+  const token = getWriteToken();
+  if (!token) {
+    setSaveStatus("Save cancelled: an admin write token is required for shared updates.", "error");
+    return false;
+  }
+  cacheScores(nextScores);
+  setSaveStatus("Saving shared scores…", "pending");
+  try {
+    const response = await fetch(SCORE_API_URL, {
+      method: "PUT",
+      headers: {
+        "Accept": "application/json",
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ scores: nextScores })
+    });
+    if (response.status === 401 || response.status === 403) sessionStorage.removeItem(SCORE_WRITE_TOKEN_KEY);
+    if (!response.ok) throw new Error(`Score API returned ${response.status}`);
+    const payload = await response.json();
+    if (isPlainObject(payload.scores)) {
+      scores = payload.scores;
+      cacheScores(scores);
+    }
+    setSaveStatus(payload.updatedAt ? `Shared scores saved · ${new Date(payload.updatedAt).toLocaleString("en-GB")}` : "Shared scores saved", "ok");
+    return true;
+  } catch (error) {
+    console.error("Could not save shared scores", error);
+    setSaveStatus("Save failed: the public shared score state was not updated. Your browser has a local cache only.", "error");
+    return false;
+  }
+}
+
+function queueSaveScores() {
+  cacheScores(scores);
   calculateAll();
+  setSaveStatus("Local edit cached; shared save pending…", "pending");
+  window.clearTimeout(saveTimer);
+  saveTimer = window.setTimeout(() => {
+    saveInFlight = saveScores(scores).finally(() => { saveInFlight = null; });
+  }, SAVE_DEBOUNCE_MS);
+}
+
+async function flushSaveScores() {
+  window.clearTimeout(saveTimer);
+  saveInFlight ||= saveScores(scores);
+  const ok = await saveInFlight;
+  saveInFlight = null;
+  return ok;
+}
+
+async function resetScores() {
+  const token = getWriteToken();
+  if (!token) {
+    setSaveStatus("Reset cancelled: an admin write token is required for shared updates.", "error");
+    return false;
+  }
+  setSaveStatus("Resetting shared scores…", "pending");
+  try {
+    const response = await fetch(SCORE_API_URL, {
+      method: "DELETE",
+      headers: { "Accept": "application/json", "Authorization": `Bearer ${token}` }
+    });
+    if (response.status === 401 || response.status === 403) sessionStorage.removeItem(SCORE_WRITE_TOKEN_KEY);
+    if (!response.ok) throw new Error(`Score API returned ${response.status}`);
+    const payload = await response.json();
+    scores = isPlainObject(payload.scores) ? payload.scores : {};
+    cacheScores(scores);
+    setSaveStatus("Shared scores reset.", "ok");
+    return true;
+  } catch (error) {
+    console.error("Could not reset shared scores", error);
+    setSaveStatus("Reset failed: the public shared score state was not updated.", "error");
+    return false;
+  }
 }
 function fmtDate(iso) {
   return new Date(iso + "T12:00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
@@ -658,7 +793,7 @@ function renderFixtures() {
       const upsetLabel = [...document.querySelectorAll("#fixturesList [data-upset-id]")]
         .find(el => el.dataset.upsetId === id);
       if (fixture && upsetLabel) upsetLabel.innerHTML = describeUpset(fixture);
-      persistScores();
+      queueSaveScores();
     });
   });
 }
@@ -781,9 +916,11 @@ function wire() {
   document.getElementById("sortEntrantsCountry").addEventListener("click", () => { entrantSort = "country"; renderEntrants(); });
   document.getElementById("sortEntrantsName").addEventListener("click", () => { entrantSort = "name"; renderEntrants(); });
   ["fixtureSearch","roundFilter"].forEach(id => document.getElementById(id).addEventListener("input", renderFixtures));
-  document.getElementById("saveBtn").addEventListener("click", persistScores);
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    if (confirm("Reset all entered scores in this browser?")) { scores = {}; persistScores(); renderFixtures(); }
+  document.getElementById("saveBtn").addEventListener("click", flushSaveScores);
+  document.getElementById("resetBtn").addEventListener("click", async () => {
+    if (confirm("Reset all shared scores for everyone?")) {
+      if (await resetScores()) { renderFixtures(); calculateAll(); }
+    }
   });
   document.getElementById("exportBtn").addEventListener("click", () => {
     const blob = new Blob([JSON.stringify(scores, null, 2)], {type:"application/json"});
@@ -796,20 +933,32 @@ function wire() {
     const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      try { scores = JSON.parse(reader.result); persistScores(); renderFixtures(); }
+      try {
+        const importedScores = JSON.parse(reader.result);
+        if (!isPlainObject(importedScores)) throw new Error("Imported JSON must be an object.");
+        scores = importedScores;
+        renderFixtures();
+        calculateAll();
+        saveScores(scores);
+      }
       catch { alert("That JSON could not be imported."); }
     };
     reader.readAsText(file);
   });
 }
 
-document.getElementById("statEntrants").textContent = APP_DATA.draw.length;
-document.getElementById("statFixtures").textContent = APP_DATA.fixtures.length;
-initFilters();
-wire();
-renderEntrants();
-renderFixtures();
-calculateAll();
+async function init() {
+  document.getElementById("statEntrants").textContent = APP_DATA.draw.length;
+  document.getElementById("statFixtures").textContent = APP_DATA.fixtures.length;
+  initFilters();
+  wire();
+  renderEntrants();
+  scores = await fetchScores();
+  renderFixtures();
+  calculateAll();
+}
+
+init();
 </script>
 </body>
 </html>
