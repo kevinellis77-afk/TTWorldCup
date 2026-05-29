@@ -610,7 +610,17 @@ button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--go
 }
 @media (max-width: 480px) {
   .card, .stat { padding: 16px; }
-  .day-head { padding: 14px; }
+  .day-head {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4px;
+    align-items: start;
+    padding: 14px;
+  }
+  .day-title {
+    font-size: 18px;
+    line-height: 1.15;
+  }
 }
 </style>
 </head>
