@@ -518,6 +518,31 @@ button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--go
     min-height: 44px;
   }
   .section-head { display: block; }
+  .award-panel {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .award-card {
+    padding: 14px;
+    border-radius: 18px;
+  }
+  .award-winner {
+    font-size: 28px;
+    overflow-wrap: anywhere;
+  }
+  .awardTableTabs {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .awardTableTab {
+    width: 100%;
+    min-height: 44px;
+  }
+  .awardTablePanel {
+    width: 100%;
+    min-width: 0;
+  }
   .fixture {
     grid-template-columns: 1fr auto auto auto 1fr;
     grid-template-areas:
@@ -584,7 +609,7 @@ button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--go
   }
 }
 @media (max-width: 480px) {
-  .card, .stat, .award-card { padding: 16px; }
+  .card, .stat { padding: 16px; }
   .day-head { padding: 14px; }
 }
 </style>
