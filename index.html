@@ -505,9 +505,47 @@ button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--go
   .toolbar { align-items: stretch; }
   .toolbar input, .toolbar select, .toolbar button { flex: 1 1 100%; }
   .section-head { display: block; }
-  .fixture { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 12px; }
-  .score-box { width: 100%; }
-  .score-dash { display: none; }
+  .fixture {
+    grid-template-columns: 1fr auto auto auto 1fr;
+    grid-template-areas:
+      "meta meta meta round round"
+      "home homeScore dash awayScore away"
+      "venue venue venue venue venue";
+    gap: 8px;
+    padding: 14px;
+    border-radius: 16px;
+    margin: 10px;
+    background: rgba(255,255,255,.045);
+  }
+  .fixture-meta { grid-area: meta; }
+  .fixture-round {
+    grid-area: round;
+    justify-self: end;
+  }
+  .fixture .team { min-width: 0; }
+  .fixture .team strong {
+    font-size: 15px;
+    overflow-wrap: anywhere;
+  }
+  .fixture .home-team { grid-area: home; }
+  .fixture .away-team {
+    grid-area: away;
+    text-align: right;
+  }
+  .fixture .score-home { grid-area: homeScore; }
+  .fixture .score-away { grid-area: awayScore; }
+  .score-box,
+  .fixture input {
+    width: 44px;
+    min-height: 40px;
+    padding: 8px 4px;
+  }
+  .score-dash {
+    display: block;
+    grid-area: dash;
+    align-self: center;
+  }
+  .fixture .venue { grid-area: venue; }
   table { min-width: 640px; }
 }
 @media (max-width: 480px) {
@@ -742,11 +780,12 @@ function rankClass(rank) {
   if (rank >= 25) return "rank-mid";
   return "rank-best";
 }
-function countryCell(country) {
+function countryCell(country, side = "") {
   const r = rankByCountry[country];
   const e = entrantByCountry[country];
-  if (!r) return `<div class="team"><strong>${country}</strong><span>Placeholder</span></div>`;
-  return `<div class="team">${countryName(country)}<span>Rank ${r.ranking} · ${e ? e.entrant : "Unallocated"}</span></div>`;
+  const sideClass = side ? ` ${side}-team` : "";
+  if (!r) return `<div class="team${sideClass}"><strong>${country}</strong><span>Placeholder</span></div>`;
+  return `<div class="team${sideClass}">${countryName(country)}<span>Rank ${r.ranking} · ${e ? e.entrant : "Unallocated"}</span></div>`;
 }
 function resultFor(id) {
   const s = scores[id] || {};
@@ -816,13 +855,13 @@ function renderFixtures() {
         const s = scores[f.id] || {};
         const upset = describeUpset(f);
         return `<div class="fixture">
-          <div><strong>${f.time}</strong><div class="muted small">Fixture #${f.id} · UK</div></div>
-          <div><span class="pill">${f.round}</span></div>
-          ${countryCell(f.home)}
-          <div class="score-box">${s.home ?? ""}</div>
+          <div class="fixture-meta"><strong>Fixture #${f.id} · ${f.time} UK</strong></div>
+          <div class="fixture-round"><span class="pill">${f.round}</span></div>
+          ${countryCell(f.home, "home")}
+          <div class="score-box score-home">${s.home ?? ""}</div>
           <div class="score-dash">–</div>
-          <div class="score-box">${s.away ?? ""}</div>
-          ${countryCell(f.away)}
+          <div class="score-box score-away">${s.away ?? ""}</div>
+          ${countryCell(f.away, "away")}
           <div class="venue"><div class="muted small">${f.venue}</div><div class="small" data-upset-id="${f.id}">${upset}</div></div>
         </div>`;
       }).join("")}
