@@ -274,6 +274,21 @@ button.danger { background: rgba(195,59,46,.18); color: #ffd7d1; border: 1px sol
 }
 .awardTablePanel.active { display: block; }
 .awardTablePanel .card { width: 100%; }
+#awards table {
+  min-width: 0;
+  table-layout: auto;
+}
+#awards table th,
+#awards table td {
+  padding: 8px 10px;
+}
+#awards table td:nth-child(2) {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+#awards .small {
+  font-size: 11px;
+}
 .table-wrap {
   overflow: auto;
   border: 1px solid var(--line);
@@ -786,7 +801,7 @@ function renderAwards() {
     <thead><tr><th>Team</th><th>Entrant</th><th>Pld</th><th>Pts</th><th>GD</th><th>GF</th><th>GA</th><th>Rank</th></tr></thead>
     <tbody>${worstRows.map(t => `<tr><td>${countryName(t.country)}</td><td>${entrantByCountry[t.country]?.entrant || "—"}</td><td>${t.played}</td><td>${t.p}</td><td>${t.gd}</td><td>${t.gf}</td><td>${t.ga}</td><td>#${t.rank}</td></tr>`).join("")}</tbody>`;
   document.getElementById("bottomTable").innerHTML = `
-    <thead><tr><th>Eligible Team</th><th>Entrant</th><th>Pts</th><th>GD</th><th>GF</th><th>Rank</th></tr></thead>
+    <thead><tr><th>Team</th><th>Entrant</th><th>Pts</th><th>GD</th><th>GF</th><th>Rank</th></tr></thead>
     <tbody>${bottomRows.map(t => `<tr><td>${countryName(t.country)}</td><td>${entrantByCountry[t.country]?.entrant || "—"}</td><td>${t.p}</td><td>${t.gd}</td><td>${t.gf}</td><td>#${t.rank}</td></tr>`).join("")}</tbody>`;
 }
 
