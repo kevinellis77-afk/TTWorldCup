@@ -127,6 +127,14 @@
     text-transform: uppercase;
   }
 
+  .topbar-status {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
   .status-pill {
     border: 1px solid rgba(255,255,255,0.20);
     background: rgba(255,255,255,0.10);
@@ -138,6 +146,11 @@
     text-transform: uppercase;
     white-space: nowrap;
     color: rgba(255,255,255,0.84);
+  }
+
+  .home-clock {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.06em;
   }
 
   .screen { display: none; }
@@ -955,8 +968,10 @@
 
   @media (max-width: 880px) {
     .app { padding-inline: 12px; }
-    .topbar { align-items: flex-start; }
+    .topbar { align-items: flex-start; flex-wrap: wrap; }
+    .topbar-status { width: 100%; justify-content: flex-start; }
     .status-pill { display: none; }
+    .home-clock { display: inline-block; }
     .hero, .results-layout { grid-template-columns: 1fr; }
     .input-grid { grid-template-columns: 1fr; }
     .locked-list { min-height: 208px; max-height: 300px; }
@@ -1035,7 +1050,10 @@
           <p>World Cup 2026 Sweepstake</p>
         </div>
       </div>
-      <div class="status-pill" id="globalStatus">Draw not started</div>
+      <div class="topbar-status">
+        <div class="status-pill" id="globalStatus">Draw not started</div>
+        <div class="status-pill home-clock" id="homeClock" aria-live="polite"></div>
+      </div>
     </header>
 
     <section class="screen active" id="setupScreen">
@@ -1431,6 +1449,22 @@
   const previewShuffle = $('previewShuffle');
   const errorBox = $('errorBox');
   const globalStatus = $('globalStatus');
+  const homeClock = $('homeClock');
+
+  function formatClockPart(value) {
+    return String(value).padStart(2, '0');
+  }
+
+  function updateHomeClock() {
+    const now = new Date();
+    const day = formatClockPart(now.getDate());
+    const month = formatClockPart(now.getMonth() + 1);
+    const year = now.getFullYear();
+    const hours = formatClockPart(now.getHours());
+    const minutes = formatClockPart(now.getMinutes());
+    const seconds = formatClockPart(now.getSeconds());
+    homeClock.textContent = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+  }
 
   function renderLockedList(id, items) {
     $(id).innerHTML = items.map(item => `<li>${escapeHtml(item)}</li>`).join('');
@@ -1869,6 +1903,8 @@
 
   renderLockedList('entrantsList', LOCKED_ENTRANTS);
   renderLockedList('countriesList', LOCKED_COUNTRIES);
+  updateHomeClock();
+  window.setInterval(updateHomeClock, 1000);
   const saved = loadSavedDraw();
   if (saved && saved.pairings) {
     globalStatus.textContent = `Saved draw found · ${saved.revealedCount || 0}/${REQUIRED_COUNT}`;
