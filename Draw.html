@@ -228,23 +228,28 @@
     letter-spacing: 0;
   }
 
-  textarea {
-    width: 100%;
+  .locked-list {
     min-height: 310px;
-    resize: vertical;
+    max-height: 360px;
+    overflow: auto;
     border: 1px solid rgba(13,23,38,0.14);
     border-radius: 18px;
-    padding: 14px 14px;
-    font: 600 14px/1.45 Aptos, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-    color: var(--ink);
+    padding: 12px;
     background: #f8fbff;
-    outline: none;
     box-shadow: inset 0 2px 8px rgba(13,23,38,0.04);
   }
 
-  textarea:focus {
-    border-color: rgba(21,58,122,0.55);
-    box-shadow: 0 0 0 4px rgba(21,58,122,0.10), inset 0 2px 8px rgba(13,23,38,0.04);
+  .locked-list ol {
+    margin: 0;
+    padding-left: 26px;
+  }
+
+  .locked-list li {
+    padding: 6px 0;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 750;
+    line-height: 1.35;
   }
 
   .controls {
@@ -954,7 +959,7 @@
     .status-pill { display: none; }
     .hero, .results-layout { grid-template-columns: 1fr; }
     .input-grid { grid-template-columns: 1fr; }
-    textarea { min-height: 208px; }
+    .locked-list { min-height: 208px; max-height: 300px; }
     .controls { grid-template-columns: 1fr; }
     .big-start { width: 100%; }
     .draw-preview { grid-template-columns: 1fr 1fr; }
@@ -1039,17 +1044,21 @@
           <div class="panel-head">
             <p class="kicker">Setup</p>
             <h2>Create the draw</h2>
-            <p class="panel-copy">Paste exactly 48 entrants and exactly 48 countries. One item per line. Choose shuffle intensity, then launch the reveal show.</p>
+            <p class="panel-copy">The draw is locked to the final 48 entrants and 48 countries. Review the lists, choose shuffle intensity, then launch the reveal show.</p>
           </div>
           <div class="panel-body">
             <div class="input-grid">
               <div>
-                <label for="namesInput">Entrants <span class="count" id="namesCount">0 / 48</span></label>
-                <textarea id="namesInput" placeholder="Kev&#10;Sally&#10;Herbie&#10;Maisy-Bow&#10;..."></textarea>
+                <label>Entrants <span class="count">48 / 48</span></label>
+                <div class="locked-list" aria-label="Locked entrants">
+                  <ol id="entrantsList"></ol>
+                </div>
               </div>
               <div>
-                <label for="countriesInput">Countries <span class="count" id="countriesCount">0 / 48</span></label>
-                <textarea id="countriesInput" placeholder="England&#10;Brazil&#10;Argentina&#10;France&#10;..."></textarea>
+                <label>Countries <span class="count">48 / 48</span></label>
+                <div class="locked-list" aria-label="Locked countries">
+                  <ol id="countriesList"></ol>
+                </div>
               </div>
             </div>
 
@@ -1061,12 +1070,10 @@
                 </div>
                 <input id="shuffleRange" type="range" min="1" max="10" value="5" />
               </div>
-              <button class="btn-primary big-start" id="startDrawBtn">Start the draw</button>
+              <button class="btn-primary big-start" id="startDrawBtn">Start new draw</button>
             </div>
 
             <div class="button-row">
-              <button class="btn-ghost" id="loadDemoBtn" type="button">Load demo data</button>
-              <button class="btn-ghost" id="clearBtn" type="button">Clear</button>
               <button class="btn-ghost" id="resumeBtn" type="button">Resume saved draw</button>
             </div>
             <div class="error-box" id="errorBox"></div>
@@ -1191,26 +1198,26 @@
 (() => {
   const REQUIRED_COUNT = 48;
   const STORAGE_KEY = 'tractorsTogetherWorldCup2026SweepstakeDraw_v3';
-  const demoNames = [
-    'John (@chelmsford Blue)', 'Jason Milton (BigHead)', 'Jon Watson', 'Krissy Day',
-    'Skip Intro', 'Jamie', 'Ashley Elden', 'Mauricio', 'Tight Jeans', 'Carl',
-    'Brian Emsden', 'Spreadsheet Chris Nephew', 'Alistair Rattray', 'Glee', 'SYTC',
-    'Paul Wellstead', 'Veronica', 'Kev', 'Phil', 'Dave H', 'Kevin Wright',
-    'Jonathan Smith', 'Mike', 'Jack Paul Saunders', 'Tom Page', 'Paul Walsh',
-    'Henry Levell', 'Craig', 'Sarah B', 'Nick Singleton', 'Lance B', 'Oscar',
-    'Andy Bantock', 'MKS (Less Wordy Mike)', 'Dan Connors', 'James Reeve', 'Joe',
-    'Mullet', 'Foyster', 'Moany Bollocks', 'Joe Pickover', 'Tom I', 'Ed Seaton',
-    'Tim Welch', 'Dave Bawden', 'Two Team Sean', 'Shane Davey', 'Harrison Smith'
+  const LOCKED_ENTRANTS = [
+    'Lance B', 'Nick Singleton', 'Tom I', 'Craig', 'Kevin Wright', 'Andy Bantock',
+    'Jamie', 'Two Team Sean', 'Glee', 'Jonathan Smith', 'Mike', 'Dave H',
+    'Dan Connors', 'Harrison Smith', 'Kev', 'Jon Watson', 'Shane Davey', 'Krissy Day',
+    'Mullet', 'Jack Paul Saunders', 'Tom Page', 'Phil', "Spreadsheet Chris' Nephew",
+    'Veronica', 'Paul Walsh', 'Oscar', 'Skip Intro', 'SYTC', 'Foyster',
+    'Henry Levell', 'Joe Pickover', 'Brian Emsden', 'Paul Wellstead', 'Ashley Elden',
+    'James Reeve', 'Mauricio', 'Carl', 'Tim Welch', 'Sarah B', 'Moany Bollocks',
+    'John (@chelmsford Blue)', 'Joe', 'Ed Seaton', 'Dave Bawden',
+    'Jason Milton (BigHead)', 'Alistair Rattray', 'Tight Jeans', 'MKS (Less Wordy Mike)'
   ];
-  const demoCountries = [
-    'New Zealand', 'Haiti', 'Curaçao', 'Ghana', 'Cabo Verde',
-    'Bosnia and Herzegovina', 'Jordan', 'Saudi Arabia', 'South Africa', 'Iraq',
-    'Qatar', 'Uzbekistan', 'Congo DR', 'Tunisia', 'Scotland', 'Czechia',
-    'Paraguay', 'Sweden', "Côte d'Ivoire", 'Panama', 'Norway', 'Egypt',
-    'Algeria', 'Canada', 'Australia', 'Korea Republic', 'Austria', 'Ecuador',
-    'Türkiye', 'IR Iran', 'Switzerland', 'Japan', 'Uruguay', 'USA', 'Mexico',
-    'Senegal', 'Colombia', 'Croatia', 'Germany', 'Belgium', 'Morocco',
-    'Netherlands', 'Brazil', 'Portugal', 'England', 'Argentina', 'Spain', 'France'
+  const LOCKED_COUNTRIES = [
+    'Haiti', 'Korea Republic', 'Uruguay', 'USA', 'Norway', 'Brazil', 'Portugal',
+    'Argentina', 'Austria', 'Paraguay', 'Tunisia', 'Curaçao', 'Scotland', 'Belgium',
+    'Uzbekistan', 'Panama', 'Ecuador', 'New Zealand', 'Cabo Verde', 'Qatar',
+    'Sweden', 'Algeria', 'Croatia', 'Canada', 'Jordan', 'Türkiye', 'Egypt',
+    'South Africa', 'Saudi Arabia', 'Japan', 'Switzerland', 'IR Iran', 'Senegal',
+    'Ghana', 'Congo DR', 'Mexico', 'England', 'France', 'Colombia', 'Iraq',
+    'Germany', 'Australia', 'Czechia', 'Netherlands', 'Morocco', "Côte d'Ivoire",
+    'Bosnia and Herzegovina', 'Spain'
   ];
 
   const state = {
@@ -1419,27 +1426,14 @@
     }, 1850);
   }
 
-  const namesInput = $('namesInput');
-  const countriesInput = $('countriesInput');
-  const namesCount = $('namesCount');
-  const countriesCount = $('countriesCount');
   const shuffleRange = $('shuffleRange');
   const shuffleValue = $('shuffleValue');
   const previewShuffle = $('previewShuffle');
   const errorBox = $('errorBox');
   const globalStatus = $('globalStatus');
 
-  function parseLines(value) {
-    return value.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
-  }
-
-  function updateCounts() {
-    const names = parseLines(namesInput.value);
-    const countries = parseLines(countriesInput.value);
-    namesCount.textContent = `${names.length} / ${REQUIRED_COUNT}`;
-    countriesCount.textContent = `${countries.length} / ${REQUIRED_COUNT}`;
-    namesCount.style.color = names.length === REQUIRED_COUNT ? 'var(--green)' : 'var(--muted)';
-    countriesCount.style.color = countries.length === REQUIRED_COUNT ? 'var(--green)' : 'var(--muted)';
+  function renderLockedList(id, items) {
+    $(id).innerHTML = items.map(item => `<li>${escapeHtml(item)}</li>`).join('');
   }
 
   function showError(message) {
@@ -1482,8 +1476,8 @@
   }
 
   function makeDraw() {
-    const names = parseLines(namesInput.value);
-    const countries = parseLines(countriesInput.value);
+    const names = [...LOCKED_ENTRANTS];
+    const countries = [...LOCKED_COUNTRIES];
     const shuffleCount = Number(shuffleRange.value);
 
     if (names.length !== REQUIRED_COUNT || countries.length !== REQUIRED_COUNT) {
@@ -1826,31 +1820,16 @@
     state.currentIndex = -1;
     state.phase = 'idle';
     resetRevealCard();
-    updateCounts();
+    clearError();
     globalStatus.textContent = 'Draw not started';
     showScreen('setup');
   }
 
-  namesInput.addEventListener('input', updateCounts);
-  countriesInput.addEventListener('input', updateCounts);
   shuffleRange.addEventListener('input', () => {
     shuffleValue.textContent = shuffleRange.value;
     previewShuffle.textContent = `${shuffleRange.value}x`;
   });
 
-  $('loadDemoBtn').addEventListener('click', () => {
-    namesInput.value = demoNames.join('\n');
-    countriesInput.value = demoCountries.join('\n');
-    clearError();
-    updateCounts();
-  });
-
-  $('clearBtn').addEventListener('click', () => {
-    namesInput.value = '';
-    countriesInput.value = '';
-    clearError();
-    updateCounts();
-  });
 
   $('resumeBtn').addEventListener('click', () => {
     const saved = loadSavedDraw();
@@ -1888,7 +1867,8 @@
     }
   });
 
-  updateCounts();
+  renderLockedList('entrantsList', LOCKED_ENTRANTS);
+  renderLockedList('countriesList', LOCKED_COUNTRIES);
   const saved = loadSavedDraw();
   if (saved && saved.pairings) {
     globalStatus.textContent = `Saved draw found · ${saved.revealedCount || 0}/${REQUIRED_COUNT}`;
