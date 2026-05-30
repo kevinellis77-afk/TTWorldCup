@@ -1191,14 +1191,26 @@
 (() => {
   const REQUIRED_COUNT = 48;
   const STORAGE_KEY = 'tractorsTogetherWorldCup2026SweepstakeDraw_v3';
-  const demoNames = Array.from({ length: 48 }, (_, i) => `Entrant ${String(i + 1).padStart(2, '0')}`);
+  const demoNames = [
+    'John (@chelmsford Blue)', 'Jason Milton (BigHead)', 'Jon Watson', 'Krissy Day',
+    'Skip Intro', 'Jamie', 'Ashley Elden', 'Mauricio', 'Tight Jeans', 'Carl',
+    'Brian Emsden', 'Spreadsheet Chris Nephew', 'Alistair Rattray', 'Glee', 'SYTC',
+    'Paul Wellstead', 'Veronica', 'Kev', 'Phil', 'Dave H', 'Kevin Wright',
+    'Jonathan Smith', 'Mike', 'Jack Paul Saunders', 'Tom Page', 'Paul Walsh',
+    'Henry Levell', 'Craig', 'Sarah B', 'Nick Singleton', 'Lance B', 'Oscar',
+    'Andy Bantock', 'MKS (Less Wordy Mike)', 'Dan Connors', 'James Reeve', 'Joe',
+    'Mullet', 'Foyster', 'Moany Bollocks', 'Joe Pickover', 'Tom I', 'Ed Seaton',
+    'Tim Welch', 'Dave Bawden', 'Two Team Sean', 'Shane Davey', 'Harrison Smith'
+  ];
   const demoCountries = [
-    'Canada','Mexico','United States','Argentina','Brazil','England','France','Germany',
-    'Spain','Portugal','Netherlands','Belgium','Croatia','Italy','Denmark','Switzerland',
-    'Uruguay','Colombia','Chile','Ecuador','Japan','South Korea','Australia','Iran',
-    'Saudi Arabia','Qatar','Morocco','Senegal','Nigeria','Ghana','Tunisia','Egypt',
-    'South Africa','Cameroon','Ivory Coast','New Zealand','Costa Rica','Panama','Jamaica','Peru',
-    'Poland','Serbia','Sweden','Norway','Scotland','Wales','Turkey','Austria'
+    'New Zealand', 'Haiti', 'Curaçao', 'Ghana', 'Cabo Verde',
+    'Bosnia and Herzegovina', 'Jordan', 'Saudi Arabia', 'South Africa', 'Iraq',
+    'Qatar', 'Uzbekistan', 'Congo DR', 'Tunisia', 'Scotland', 'Czechia',
+    'Paraguay', 'Sweden', "Côte d'Ivoire", 'Panama', 'Norway', 'Egypt',
+    'Algeria', 'Canada', 'Australia', 'Korea Republic', 'Austria', 'Ecuador',
+    'Türkiye', 'IR Iran', 'Switzerland', 'Japan', 'Uruguay', 'USA', 'Mexico',
+    'Senegal', 'Colombia', 'Croatia', 'Germany', 'Belgium', 'Morocco',
+    'Netherlands', 'Brazil', 'Portugal', 'England', 'Argentina', 'Spain', 'France'
   ];
 
   const state = {
@@ -1224,7 +1236,7 @@
 
 
   const BAD_DRAW_COUNTRIES = new Set([
-    'new zealand', 'haiti', 'curacao', 'curaçao', 'ghana', 'cape verde',
+    'new zealand', 'haiti', 'curacao', 'curaçao', 'ghana', 'cabo verde', 'cape verde',
     'bosnia and herzegovina', 'jordan', 'saudi arabia', 'south africa',
     'iraq', 'qatar', 'uzbekistan', 'congo dr', 'tunisia'
   ]);
