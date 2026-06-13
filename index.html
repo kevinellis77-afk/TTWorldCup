@@ -920,10 +920,10 @@ function buildStandings() {
   return Object.values(table);
 }
 function sortPerformance(a,b) {
-  return b.p - a.p || b.gd - a.gd || b.gf - a.gf || a.ga - b.ga || a.rank - b.rank;
+  return b.p - a.p || b.gd - a.gd || b.gf - a.gf || a.ga - b.ga || b.rank - a.rank;
 }
 function sortWorst(a,b) {
-  return a.p - b.p || a.gd - b.gd || a.gf - b.gf || b.ga - a.ga || b.rank - a.rank;
+  return a.p - b.p || a.gd - b.gd || a.gf - b.gf || b.ga - a.ga || a.rank - b.rank;
 }
 function findBeigeMonday() {
   const underdogWins = [], underdogDraws = [];
