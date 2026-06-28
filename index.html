@@ -423,12 +423,30 @@ button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--go
 }
 .award-card {
   min-width: 0;
+  position: relative;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: linear-gradient(145deg, rgba(242,194,62,.14), rgba(255,255,255,.05));
   padding: 18px;
   box-shadow: var(--shadow);
 }
+
+.award-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(242,194,62,.45);
+  background: rgba(242,194,62,.14);
+  color: #fff2bd;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
 .award-title {
   color: var(--gold);
   font-weight: 900;
@@ -722,12 +740,13 @@ button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--go
   <section id="awards">
     <div class="section-head">
       <div>
-        <h2>Live Prize Board</h2>
+        <h2>Prize Board</h2>
+        <div class="section-copy">Group-stage prizes are now confirmed.</div>
       </div>
     </div>
     <div class="award-panel">
-      <div class="award-card"><div class="award-title">Tom Page Award <span class="muted">(Best Sh*t Team)</span></div><div class="award-winner" id="tomWinner">—</div><div class="award-sub" id="tomSub">No group results yet.</div></div>
-      <div class="award-card"><div class="award-title">Tight Jeans Award <span class="muted">(Ultimate Loser)</span></div><div class="award-winner" id="tightWinner">—</div><div class="award-sub" id="tightSub">No group results yet.</div></div>
+      <div class="award-card"><div class="award-status">Confirmed winner</div><div class="award-title">Tom Page Award <span class="muted">(Best Sh*t Team)</span></div><div class="award-winner" id="tomWinner">—</div><div class="award-sub" id="tomSub">No group results yet.</div></div>
+      <div class="award-card"><div class="award-status">Confirmed winner</div><div class="award-title">Tight Jeans Award <span class="muted">(Ultimate Loser)</span></div><div class="award-winner" id="tightWinner">—</div><div class="award-sub" id="tightSub">No group results yet.</div></div>
       <div class="award-card"><div class="award-title">Beige Monday Award <span class="muted">(Biggest Shock)</span></div><div class="award-winner" id="beigeWinner">—</div><div class="award-sub" id="beigeSub">No results yet.</div></div>
     </div>
     <div class="awardTableTabs" id="awardTableTabs" role="tablist" aria-label="Live prize board tables">
@@ -738,14 +757,14 @@ button.secondary.active-sort { background: rgba(238,190,73,.18); color: var(--go
       <div class="awardTablePanel active" id="award-performance-panel" role="tabpanel">
         <div class="card">
           <h3>Group Performance Table</h3>
-          <p class="muted small">Showing the current worst 15 teams. Top row is the live Tight Jeans contender.</p>
+          <p class="muted small">Showing the worst 15 group-stage performances. Top row confirms the Tight Jeans Award winner.</p>
           <div class="table-wrap"><table id="standingsTable"></table></div>
         </div>
       </div>
       <div class="awardTablePanel" id="award-bottom15-panel" role="tabpanel">
         <div class="card">
           <h3>Bottom 15 Watchlist</h3>
-          <p class="muted small">Eligible teams for the Tom Page Award.</p>
+          <p class="muted small">Eligible teams for the Tom Page Award. Top row confirms the award winner.</p>
           <div class="table-wrap"><table id="bottomTable"></table></div>
         </div>
       </div>
@@ -1026,9 +1045,9 @@ function renderAwards() {
   const beige = findBeigeMonday();
 
   document.getElementById("tomWinner").textContent = playedAny && tom ? awardWinnerLabel(tom.country) : "—";
-  document.getElementById("tomSub").textContent = playedAny && tom ? `${entrantByCountry[tom.country]?.entrant || "—"} · ${tom.p} pts · GD ${tom.gd} · Rank #${tom.rank}` : "No group results yet.";
+  document.getElementById("tomSub").textContent = playedAny && tom ? `£20 confirmed · ${entrantByCountry[tom.country]?.entrant || "—"} · ${tom.p} pts · GD ${tom.gd} · Rank #${tom.rank}` : "No group results yet.";
   document.getElementById("tightWinner").textContent = playedAny && tight ? awardWinnerLabel(tight.country) : "—";
-  document.getElementById("tightSub").textContent = playedAny && tight ? `${entrantByCountry[tight.country]?.entrant || "—"} · ${tight.p} pts · GD ${tight.gd} · GF ${tight.gf} · GA ${tight.ga}` : "No group results yet.";
+  document.getElementById("tightSub").textContent = playedAny && tight ? `£20 confirmed · ${entrantByCountry[tight.country]?.entrant || "—"} · ${tight.p} pts · GD ${tight.gd} · GF ${tight.gf} · GA ${tight.ga}` : "No group results yet.";
   document.getElementById("beigeWinner").textContent = beige ? awardWinnerLabel(beige.team) : "—";
   document.getElementById("beigeSub").textContent = beige ? `${beige.type} vs ${beige.opponent} · ranking gap ${beige.gap} · ${beige.score} · ${fmtDate(beige.f.date)}` : "No results yet.";
 
