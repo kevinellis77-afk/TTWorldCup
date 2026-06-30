@@ -848,7 +848,9 @@ const FIXTURE_SCORES = {
   65: { home: 1, away: 5 },
   66: { home: 1, away: 1 },
   67: { home: 0, away: 2 },
-  68: { home: 2, away: 1 }
+  68: { home: 2, away: 1 },
+  75: { home: 2, away: 2, winner: "Paraguay" },
+  76: { home: 1, away: 1, penHome: 2, penAway: 3, winner: "Morocco" }
 };
 let scores = FIXTURE_SCORES;
 let entrantSort = "rank";
@@ -893,8 +895,46 @@ function resultFor(id) {
   const s = scores[id] || {};
   const hs = s.home === "" || s.home === undefined ? null : Number(s.home);
   const as = s.away === "" || s.away === undefined ? null : Number(s.away);
-  if (Number.isFinite(hs) && Number.isFinite(as)) return { home: hs, away: as };
+  if (!Number.isFinite(hs) || !Number.isFinite(as)) return null;
+
+  const res = { home: hs, away: as };
+  const penHome = s.penHome === "" || s.penHome === undefined ? null : Number(s.penHome);
+  const penAway = s.penAway === "" || s.penAway === undefined ? null : Number(s.penAway);
+  if (Number.isFinite(penHome)) res.penHome = penHome;
+  if (Number.isFinite(penAway)) res.penAway = penAway;
+  if (s.winner) res.winner = s.winner;
+  return res;
+}
+
+function isKnockoutFixture(f) {
+  return !/^Group [A-L]$/.test(f.round);
+}
+
+function shootoutWinner(f, r) {
+  if (!r || r.home !== r.away || !isKnockoutFixture(f)) return null;
+  if (r.winner === f.home || r.winner === "home") return f.home;
+  if (r.winner === f.away || r.winner === "away") return f.away;
+  if (Number.isFinite(r.penHome) && Number.isFinite(r.penAway) && r.penHome !== r.penAway) {
+    return r.penHome > r.penAway ? f.home : f.away;
+  }
   return null;
+}
+
+function fixtureWinner(f, r) {
+  if (!r) return null;
+  if (r.home > r.away) return f.home;
+  if (r.away > r.home) return f.away;
+  return shootoutWinner(f, r);
+}
+
+function penaltyNote(f) {
+  const r = resultFor(f.id);
+  const winner = shootoutWinner(f, r);
+  if (!winner) return "";
+  const score = Number.isFinite(r.penHome) && Number.isFinite(r.penAway)
+    ? ` ${winner === f.home ? r.penHome : r.penAway}-${winner === f.home ? r.penAway : r.penHome}`
+    : "";
+  return `${winner} won${score} on penalties`;
 }
 
 function renderEntrants() {
@@ -956,6 +996,7 @@ function renderFixtures() {
       ${list.map(f => {
         const s = scores[f.id] || {};
         const upset = describeUpset(f);
+        const shootoutNote = penaltyNote(f);
         return `<div class="fixture">
           <div class="fixture-meta"><strong>Fixture #${f.id} · ${f.time} UK</strong></div>
           <div class="fixture-round"><span class="pill">${f.round}</span></div>
@@ -964,7 +1005,7 @@ function renderFixtures() {
           <div class="score-dash">–</div>
           <div class="score-box score-away">${s.away ?? ""}</div>
           ${countryCell(f.away, "away")}
-          <div class="venue"><div class="muted small">${f.venue}</div><div class="small" data-upset-id="${f.id}">${upset}</div></div>
+          <div class="venue"><div class="muted small">${f.venue}</div>${shootoutNote ? `<div class="small"><strong>${shootoutNote}</strong></div>` : ""}<div class="small" data-upset-id="${f.id}">${upset}</div></div>
         </div>`;
       }).join("")}
     </div>`).join("");
@@ -974,13 +1015,13 @@ function describeUpset(f) {
   const r = resultFor(f.id);
   if (!r || !isCountry(f.home) || !isCountry(f.away)) return `<span class="muted">Upset calc pending</span>`;
   const hr = rankByCountry[f.home].ranking, ar = rankByCountry[f.away].ranking;
-  if (r.home === r.away) {
+  const winner = fixtureWinner(f, r);
+  if (!winner) {
     const underdog = hr > ar ? f.home : ar > hr ? f.away : null;
     const gap = Math.abs(hr - ar);
     return underdog ? `Draw upset watch: ${underdog} +${gap}` : "Draw";
   }
-  const winner = r.home > r.away ? f.home : f.away;
-  const loser = r.home > r.away ? f.away : f.home;
+  const loser = winner === f.home ? f.away : f.home;
   const wr = rankByCountry[winner].ranking, lr = rankByCountry[loser].ranking;
   if (wr > lr) return `<strong style="color:var(--gold)">Underdog win: ${winner} +${wr-lr}</strong>`;
   return "No upset";
@@ -1017,15 +1058,15 @@ function findBeigeMonday() {
     const res = resultFor(f.id);
     if (!res || !isCountry(f.home) || !isCountry(f.away)) return;
     const hr = rankByCountry[f.home].ranking, ar = rankByCountry[f.away].ranking;
-    if (res.home === res.away) {
+    const winner = fixtureWinner(f, res);
+    if (!winner) {
       if (hr !== ar) {
         const underdog = hr > ar ? f.home : f.away;
         underdogDraws.push({ type:"Draw", team:underdog, opponent: underdog === f.home ? f.away : f.home, gap:Math.abs(hr-ar), f, score:`${res.home}-${res.away}` });
       }
       return;
     }
-    const winner = res.home > res.away ? f.home : f.away;
-    const loser = res.home > res.away ? f.away : f.home;
+    const loser = winner === f.home ? f.away : f.home;
     const wr = rankByCountry[winner].ranking, lr = rankByCountry[loser].ranking;
     if (wr > lr) underdogWins.push({ type:"Win", team:winner, opponent:loser, gap:wr-lr, f, score:`${res.home}-${res.away}` });
   });
